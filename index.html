@@ -1,0 +1,2456 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Una Velada Especial</title>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --paper: #f2e8d5;
+    --paper-dark: #e8d9be;
+    --paper-light: #faf4e8;
+    --ink: #3a2e1e;
+    --ink-light: #5c4a30;
+    --ink-faint: #8a7260;
+    --gold: #b8962e;
+    --gold-light: #d4af5a;
+    --wood: #1a1008;
+    --sepia: #c4a882;
+    --border-ornament: #a07840;
+  }
+
+  body {
+    background-color: #0a0608;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Cormorant Garamond', serif;
+    padding: 2rem 1rem;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* ═══ VICTORIAN BACKGROUND SCENE ═══ */
+  #bg-scene {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  #bg-scene::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 55% at 50% 0%, #1a0e2e 0%, #0d0814 45%, #080508 100%),
+      radial-gradient(ellipse 60% 40% at 30% 20%, #1e0a1a 0%, transparent 60%),
+      radial-gradient(ellipse 50% 35% at 75% 15%, #12091c 0%, transparent 55%);
+  }
+  #bg-scene::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 55%;
+    background:
+      radial-gradient(ellipse 100% 70% at 50% 100%, #0b111e 0%, #080d18 40%, transparent 75%),
+      radial-gradient(ellipse 55% 40% at 20% 100%, #0a0f1a 0%, transparent 65%),
+      radial-gradient(ellipse 55% 40% at 80% 100%, #0a0f1a 0%, transparent 65%);
+  }
+  .star {
+    position: absolute;
+    background: #fff;
+    border-radius: 50%;
+    animation: twinkle var(--td, 3s) ease-in-out infinite var(--dl, 0s);
+  }
+  @keyframes twinkle {
+    0%,100% { opacity: var(--ob, 0.5); transform: scale(1); }
+    50%      { opacity: var(--op, 0.9); transform: scale(1.3); }
+  }
+  @keyframes drift {
+    0%   { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
+    20%  { opacity: 0.4; }
+    80%  { opacity: 0.2; }
+    100% { transform: translateY(-80px) translateX(20px) scale(0.6); opacity: 0; }
+  }
+  .mote {
+    position: absolute;
+    width: 2px; height: 2px;
+    background: #c4a060;
+    border-radius: 50%;
+    animation: drift var(--mt, 8s) ease-in-out infinite var(--md, 0s);
+    opacity: 0;
+  }
+  .candle-halo {
+    position: absolute;
+    bottom: 26%;
+    border-radius: 50%;
+    filter: blur(18px);
+    animation: halo-pulse var(--hp, 4s) ease-in-out infinite;
+  }
+  /* ───── FLOATING LANTERNS CANVAS ───── */
+  #lantern-canvas {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  @keyframes halo-pulse {
+    0%,100% { opacity: var(--ho, 0.25); transform: scaleX(1) scaleY(1); }
+    50%     { opacity: calc(var(--ho, 0.25) * 1.3); transform: scaleX(1.06) scaleY(0.95); }
+  }
+
+  /* ───── ENVELOPE / CARTA ───── */
+  #scene {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 680px;
+    perspective: 1200px;
+  }
+
+  /* ───── ENVELOPE ───── */
+  .envelope-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .envelope {
+    width: 340px;
+    height: 240px;
+    position: relative;
+    filter: drop-shadow(0 8px 24px rgba(0,0,0,0.5));
+    transition: transform 0.3s ease;
+  }
+  .envelope:hover { transform: scale(1.02) translateY(-4px); }
+
+  .envelope svg { width: 100%; height: 100%; }
+
+  .envelope-label {
+    margin-top: 1.5rem;
+    color: var(--sepia);
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 1rem;
+    letter-spacing: 0.05em;
+    opacity: 0.8;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%,100% { opacity: 0.6; }
+    50% { opacity: 1; }
+  }
+
+  /* ───── PAPER SHEET ───── */
+  .sheet {
+    display: none;
+    width: 100%;
+    max-width: 620px;
+    margin: 0 auto;
+    background-color: var(--paper);
+    background-image:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E"),
+      repeating-linear-gradient(0deg, transparent, transparent 27px, rgba(160,120,64,0.07) 27px, rgba(160,120,64,0.07) 28px);
+    border-radius: 2px;
+    padding: 3rem 3.5rem;
+    position: relative;
+    box-shadow:
+      0 2px 4px rgba(0,0,0,0.1),
+      0 8px 32px rgba(0,0,0,0.4),
+      inset 0 0 80px rgba(180,140,80,0.08);
+    animation: fadeSheet 0.8s ease forwards;
+    opacity: 0;
+  }
+
+  @keyframes fadeSheet {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Paper edges */
+  .sheet::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 2px;
+    background: linear-gradient(180deg,
+      rgba(255,255,255,0.18) 0%,
+      transparent 8%,
+      transparent 92%,
+      rgba(0,0,0,0.06) 100%);
+    pointer-events: none;
+  }
+
+  /* Corner wear marks */
+  .sheet::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60px 60px at 0% 0%, rgba(120,80,20,0.08) 0%, transparent 70%),
+      radial-gradient(ellipse 60px 60px at 100% 0%, rgba(120,80,20,0.06) 0%, transparent 70%),
+      radial-gradient(ellipse 80px 80px at 0% 100%, rgba(120,80,20,0.1) 0%, transparent 70%),
+      radial-gradient(ellipse 80px 80px at 100% 100%, rgba(120,80,20,0.08) 0%, transparent 70%);
+    pointer-events: none;
+    border-radius: 2px;
+  }
+
+  .sheet.active { display: block; }
+
+  /* ───── ORNAMENTAL BORDER ───── */
+  .ornament-border {
+    position: absolute;
+    inset: 12px;
+    border: 1px solid rgba(160,120,64,0.3);
+    pointer-events: none;
+    border-radius: 1px;
+  }
+  .ornament-border::before {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border: 1px solid rgba(160,120,64,0.15);
+  }
+
+  /* Corner ornaments */
+  .corner { position: absolute; width: 24px; height: 24px; }
+  .corner svg { width: 100%; height: 100%; }
+  .corner-tl { top: 8px; left: 8px; }
+  .corner-tr { top: 8px; right: 8px; transform: scaleX(-1); }
+  .corner-bl { bottom: 8px; left: 8px; transform: scaleY(-1); }
+  .corner-br { bottom: 8px; right: 8px; transform: scale(-1,-1); }
+
+  /* ───── TYPOGRAPHY ───── */
+  .chapter-label {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.25em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    text-align: center;
+    margin-bottom: 0.75rem;
+  }
+
+  .chapter-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    color: var(--ink-light);
+    text-align: center;
+    font-weight: 400;
+    margin-bottom: 1.5rem;
+    letter-spacing: 0.02em;
+  }
+
+  .divider {
+    text-align: center;
+    color: var(--gold);
+    font-size: 1.1rem;
+    margin: 0.5rem 0 1.5rem;
+    letter-spacing: 0.3em;
+    opacity: 0.7;
+  }
+
+  .poem-text {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 1.05rem;
+    line-height: 1.95;
+    color: var(--ink);
+    text-align: center;
+    margin-bottom: 1.8rem;
+  }
+
+  .poem-text.left-align {
+    text-align: left;
+  }
+
+  .salutation {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 1.2rem;
+    color: var(--ink);
+    margin-bottom: 1.2rem;
+  }
+
+  /* ───── CHOICES ───── */
+  .choices {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .choice-btn {
+    background: transparent;
+    border: 1px solid var(--border-ornament);
+    color: var(--ink);
+    font-family: 'Lato', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 300;
+    letter-spacing: 0.12em;
+    padding: 0.6rem 1.4rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    min-width: 130px;
+  }
+
+  .choice-btn::before, .choice-btn::after {
+    content: '✦';
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.5rem;
+    color: var(--gold);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .choice-btn::before { left: 6px; }
+  .choice-btn::after  { right: 6px; }
+
+  .choice-btn:hover {
+    background: rgba(160,120,64,0.08);
+    border-color: var(--gold-light);
+    color: var(--ink);
+  }
+  .choice-btn:hover::before,
+  .choice-btn:hover::after { opacity: 1; }
+
+  .choice-btn.selected {
+    background: rgba(160,120,64,0.15);
+    border-color: var(--gold);
+    color: var(--ink);
+  }
+  .choice-btn.selected::before,
+  .choice-btn.selected::after { opacity: 1; }
+
+  /* Continue button */
+  .continue-btn {
+    display: block;
+    margin: 2rem auto 0;
+    background: transparent;
+    border: none;
+    color: var(--ink-faint);
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 0.9rem;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    padding: 0.4rem 0.8rem;
+    border-bottom: 1px solid transparent;
+  }
+  .continue-btn:hover {
+    color: var(--ink);
+    border-bottom-color: rgba(160,120,64,0.4);
+  }
+  .continue-btn.hidden { opacity: 0; pointer-events: none; }
+
+  /* ───── TEXTAREA ───── */
+  .secret-textarea {
+    width: 100%;
+    min-height: 100px;
+    background: rgba(255,255,255,0.18);
+    border: none;
+    border-bottom: 1px solid rgba(160,120,64,0.4);
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 0.95rem;
+    color: var(--ink);
+    padding: 0.6rem 0.2rem;
+    resize: none;
+    margin-top: 1rem;
+    outline: none;
+    line-height: 1.8;
+  }
+  .secret-textarea::placeholder {
+    color: var(--ink-faint);
+    opacity: 0.7;
+  }
+  .secret-textarea:focus {
+    border-bottom-color: var(--gold);
+  }
+
+  .field-label {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 0.9rem;
+    color: var(--ink-faint);
+    margin-bottom: 0.3rem;
+    display: block;
+  }
+
+  /* ───── SEND BUTTON ───── */
+  .send-btn {
+    display: block;
+    margin: 2.5rem auto 0;
+    background: transparent;
+    border: 1px solid var(--gold);
+    color: var(--ink);
+    font-family: 'Lato', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 300;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 0.75rem 2.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  .send-btn:hover {
+    background: rgba(160,120,64,0.12);
+    border-color: var(--gold-light);
+  }
+  .send-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* ───── FEEDBACK ───── */
+  #feedback {
+    text-align: center;
+    margin-top: 1.5rem;
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 0.95rem;
+    color: var(--gold);
+    min-height: 1.4em;
+    letter-spacing: 0.05em;
+    transition: opacity 0.4s ease;
+  }
+
+  /* ───── DECORATIVE SVG INLINE ───── */
+  .deco-top {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    opacity: 0.55;
+  }
+  .deco-bottom {
+    text-align: center;
+    margin-top: 2rem;
+    opacity: 0.45;
+  }
+
+  /* ───── LILY / QUILL ILLUSTRATION ───── */
+  .deco-lily { display: block; margin: 0 auto 0.5rem; }
+
+  /* ───── PROGRESS DOTS ───── */
+  .progress {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 1.2rem;
+  }
+  .dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: rgba(160,120,64,0.25);
+    transition: background 0.4s ease;
+  }
+  .dot.active { background: var(--gold); }
+  .dot.done { background: rgba(160,120,64,0.55); }
+
+  /* ───── ANIMATIONS ───── */
+  .fade-text {
+    opacity: 0;
+    animation: fadeText 1s ease 0.2s forwards;
+  }
+  @keyframes fadeText {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ───── RESPONSIVE ───── */
+  @media (max-width: 540px) {
+    .sheet { padding: 2rem 1.5rem; }
+    .choices { flex-direction: column; align-items: center; }
+    .choice-btn { width: 100%; max-width: 260px; }
+    .envelope { width: 280px; height: 200px; }
+  }
+
+  /* ───── HIDDEN FORM (Formspree) ───── */
+  #hidden-form { display: none; }
+
+  /* ───── LILY ENTRANCE ANIMATION ───── */
+  #closing-lily {
+    opacity: 0;
+    transform: translateY(18px) scale(0.92);
+    transition: opacity 1.2s cubic-bezier(0.22,0.61,0.36,1),
+                transform 1.2s cubic-bezier(0.22,0.61,0.36,1);
+  }
+  #closing-lily.lily-visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  /* Gentle sway once visible */
+  @keyframes lily-sway {
+    0%,100% { transform: rotate(-1.5deg) translateY(0); }
+    50%     { transform: rotate(1.5deg) translateY(-2px); }
+  }
+  #closing-lily.lily-swaying {
+    animation: lily-sway 5s ease-in-out infinite;
+    transform-origin: 50% 100%;
+  }
+
+  /* ───── SEND BUTTON — shimmer on hover ───── */
+  .send-btn {
+    overflow: hidden;
+  }
+  .send-btn::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 60%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,220,100,0.18), transparent);
+    transform: skewX(-20deg);
+    transition: left 0s;
+  }
+  .send-btn:hover::after {
+    left: 160%;
+    transition: left 0.6s ease;
+  }
+  .send-btn { position: relative; }
+
+  /* ───── CLOSING ENVELOPE OVERLAY ───── */
+  #closing-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    background: #05080f;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 1s ease;
+    text-align: center;
+  }
+  #closing-envelope-svg {
+    display: block;
+    margin: 0 auto;
+  }
+  #closing-overlay.visible {
+    opacity: 1;
+    pointer-events: all;
+  }
+  #closing-envelope-svg {
+    filter: drop-shadow(0 12px 40px rgba(184,150,46,0.25));
+    display: block;
+    margin: 0 auto;
+  }
+  /* Envelope flap close animation */
+  #env-flap {
+    transform-origin: 50% 0%;
+    transform: rotateX(0deg);
+    transition: transform 1.1s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  #env-flap.closed {
+    transform: rotateX(180deg);
+  }
+  /* Heart that pulses after envelope closes */
+  #final-heart {
+    opacity: 0;
+    transform: scale(0.4);
+    transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.34,1.56,0.64,1);
+    margin-top: 2.2rem;
+  }
+  #final-heart.visible {
+    opacity: 1;
+    transform: scale(1);
+  }
+  @keyframes heartbeat {
+    0%,100% { transform: scale(1); }
+    14%     { transform: scale(1.15); }
+    28%     { transform: scale(1); }
+    42%     { transform: scale(1.08); }
+    56%     { transform: scale(1); }
+  }
+  #final-heart.beating {
+    animation: heartbeat 1.8s ease-in-out infinite;
+  }
+  #final-tagline {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 1rem;
+    color: #c4a882;
+    letter-spacing: 0.08em;
+    opacity: 0;
+    margin-top: 1.4rem;
+    transition: opacity 1s ease;
+  }
+  #final-tagline.visible { opacity: 0.8; }
+
+  /* ───── PETAL BURST CANVAS ───── */
+  #petal-canvas {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 999;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  #petal-canvas.active { opacity: 1; }
+
+  /* ───── SUCCESS MESSAGE ───── */
+  #feedback.success {
+    font-size: 1rem;
+    letter-spacing: 0.08em;
+    line-height: 1.8;
+  }
+
+  /* ───── CHAPTER QUESTION (guía) ───── */
+  .chapter-question {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 0.95rem;
+    font-weight: 300;
+    color: var(--ink-light);
+    text-align: center;
+    letter-spacing: 0.04em;
+    margin: -0.6rem 0 1.6rem;
+    opacity: 0.85;
+    line-height: 1.5;
+  }
+  .chapter-question::before { content: '«\00a0'; color: var(--gold); opacity: 0.7; font-style: normal; }
+  .chapter-question::after  { content: '\00a0»'; color: var(--gold); opacity: 0.7; font-style: normal; }
+
+  /* ───── IMPROVED SHEET SHADOW ───── */
+  .sheet {
+    box-shadow:
+      0 1px 2px rgba(0,0,0,0.15),
+      0 4px 12px rgba(0,0,0,0.25),
+      0 16px 48px rgba(0,0,0,0.45),
+      0 32px 80px rgba(0,0,0,0.3),
+      inset 0 0 100px rgba(180,140,80,0.06),
+      inset 1px 0 0 rgba(255,255,255,0.12),
+      inset -1px 0 0 rgba(0,0,0,0.04);
+  }
+
+  /* ───── INK STAIN OVERLAY ───── */
+  .ink-stain {
+    position: absolute;
+    pointer-events: none;
+    opacity: 0.04;
+    border-radius: 50%;
+    background: radial-gradient(ellipse, #3a2e1e 0%, transparent 70%);
+  }
+  .ink-stain-1 { width: 80px; height: 50px; top: 18%; right: 8%; transform: rotate(-15deg); }
+  .ink-stain-2 { width: 40px; height: 30px; bottom: 22%; left: 6%; transform: rotate(8deg); opacity: 0.03; }
+
+  /* ───── QUILL LATERAL (fixed to sheet) ───── */
+  .quill-lateral {
+    position: absolute;
+    right: -18px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.18;
+    pointer-events: none;
+    display: none;
+  }
+  @media (min-width: 720px) { .quill-lateral { display: block; } }
+
+  /* ───── CANDLE AMBIENCE ───── */
+  #candle-wrap {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.55;
+  }
+  #candle-wrap svg { display: block; }
+  @keyframes flicker {
+    0%,100% { opacity: 0.55; transform: scaleX(1) scaleY(1); }
+    20%      { opacity: 0.5;  transform: scaleX(0.96) scaleY(1.04); }
+    40%      { opacity: 0.58; transform: scaleX(1.03) scaleY(0.97); }
+    60%      { opacity: 0.52; transform: scaleX(0.98) scaleY(1.02); }
+    80%      { opacity: 0.56; transform: scaleX(1.01) scaleY(0.99); }
+  }
+  #candle-flame { animation: flicker 3s ease-in-out infinite; transform-origin: 50% 80%; }
+  @keyframes glow-pulse {
+    0%,100% { opacity: 0.18; }
+    50%     { opacity: 0.26; }
+  }
+  #candle-glow { animation: glow-pulse 3s ease-in-out infinite; }
+
+  /* ───── AUDIO BUTTON ───── */
+  #audio-btn {
+    position: fixed;
+    top: 1.4rem;
+    right: 1.6rem;
+    z-index: 100;
+    background: transparent;
+    border: 1px solid rgba(160,120,64,0.45);
+    color: #c4a882;
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    padding: 0.35rem 0.75rem;
+    cursor: pointer;
+    transition: all 0.35s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    opacity: 0;
+    pointer-events: none;
+    backdrop-filter: none;
+  }
+  #audio-btn.visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  #audio-btn:hover {
+    border-color: rgba(184,150,46,0.7);
+    color: #d4af5a;
+    background: rgba(26,16,8,0.4);
+  }
+  #audio-btn .note-icon {
+    font-style: normal;
+    font-size: 0.85rem;
+    line-height: 1;
+  }
+
+  /* ───── IMPROVED TRANSITIONS ───── */
+  @keyframes fadeSheet {
+    from { opacity: 0; transform: translateY(16px) scale(0.995); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .fade-text {
+    opacity: 0;
+    animation: fadeText 1.1s cubic-bezier(0.22,0.61,0.36,1) 0.35s forwards;
+  }
+  @keyframes fadeText {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Improved choice hover */
+  .choice-btn {
+    transition: background 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease, transform 0.2s ease;
+  }
+  .choice-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 12px rgba(160,120,64,0.15);
+  }
+  .choice-btn:active { transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- ═══ AUDIO: Web Audio API (no external files needed) ═══ -->
+
+<!-- ═══ AUDIO BUTTON ═══ -->
+<button id="audio-btn" onclick="toggleAudio()" title="Música ambiental">
+  <span class="note-icon" id="note-icon">♪</span>
+  <span id="audio-label">Música</span>
+</button>
+
+<!-- ═══ CANDLE ═══ -->
+<div id="candle-wrap">
+  <svg width="48" height="90" viewBox="0 0 48 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Glow halo -->
+    <ellipse id="candle-glow" cx="24" cy="28" rx="22" ry="22" fill="#f5c842" opacity="0.18"/>
+    <!-- Flame -->
+    <g id="candle-flame">
+      <ellipse cx="24" cy="24" rx="7" ry="11" fill="#f5c842" opacity="0.35"/>
+      <path d="M24 34 C18 28 17 20 20 14 C22 10 24 8 24 8 C24 8 26 10 28 14 C31 20 30 28 24 34Z" fill="#f9d86a"/>
+      <path d="M24 30 C21 26 20 20 22 15 C23 12 24 10 24 10 C24 10 25 12 26 15 C28 20 27 26 24 30Z" fill="#fff8e1" opacity="0.8"/>
+      <ellipse cx="24" cy="29" rx="2.5" ry="1.5" fill="#e8a020" opacity="0.6"/>
+    </g>
+    <!-- Wick -->
+    <line x1="24" y1="34" x2="24" y2="38" stroke="#3a2e1e" stroke-width="1"/>
+    <!-- Candle body -->
+    <rect x="17" y="38" width="14" height="44" rx="2" fill="#f2e8d5"/>
+    <rect x="17" y="38" width="14" height="44" rx="2" fill="none" stroke="#c4a882" stroke-width="0.5"/>
+    <!-- Wax drips -->
+    <path d="M17 44 C15 46 15 50 17 52 L17 44Z" fill="#e8d9be" opacity="0.7"/>
+    <path d="M28 40 C30 43 30 47 28 48 L28 40Z" fill="#e8d9be" opacity="0.5"/>
+    <!-- Candle lines texture -->
+    <line x1="18" y1="48" x2="30" y2="48" stroke="#c4a882" stroke-width="0.3" opacity="0.4"/>
+    <line x1="18" y1="56" x2="30" y2="56" stroke="#c4a882" stroke-width="0.3" opacity="0.3"/>
+    <line x1="18" y1="64" x2="30" y2="64" stroke="#c4a882" stroke-width="0.3" opacity="0.3"/>
+    <!-- Base plate -->
+    <ellipse cx="24" cy="82" rx="10" ry="3" fill="#b8962e" opacity="0.5"/>
+    <rect x="14" y="80" width="20" height="4" rx="1" fill="#b8962e" opacity="0.4"/>
+  </svg>
+</div>
+
+<!-- ═══ VICTORIAN BACKGROUND ═══ -->
+<div id="bg-scene">
+
+  <!-- Stars layer -->
+  <div class="star" style="width:1px;height:1px;left:8%;top:4%;--td:2.8s;--dl:0.2s;--ob:0.4;--op:0.85;"></div>
+  <div class="star" style="width:2px;height:2px;left:15%;top:7%;--td:3.5s;--dl:0.7s;--ob:0.6;--op:1;"></div>
+  <div class="star" style="width:1px;height:1px;left:24%;top:3%;--td:2.2s;--dl:1.1s;--ob:0.3;--op:0.7;"></div>
+  <div class="star" style="width:2px;height:2px;left:33%;top:9%;--td:4.1s;--dl:0.3s;--ob:0.5;--op:0.95;"></div>
+  <div class="star" style="width:1px;height:1px;left:41%;top:5%;--td:3.0s;--dl:1.5s;--ob:0.35;--op:0.8;"></div>
+  <div class="star" style="width:2px;height:2px;left:50%;top:2%;--td:2.6s;--dl:0.9s;--ob:0.7;--op:1;"></div>
+  <div class="star" style="width:1px;height:1px;left:58%;top:8%;--td:3.8s;--dl:0.4s;--ob:0.45;--op:0.9;"></div>
+  <div class="star" style="width:2px;height:2px;left:67%;top:4%;--td:2.4s;--dl:1.8s;--ob:0.55;--op:0.95;"></div>
+  <div class="star" style="width:1px;height:1px;left:74%;top:11%;--td:3.3s;--dl:0.6s;--ob:0.3;--op:0.75;"></div>
+  <div class="star" style="width:2px;height:2px;left:82%;top:6%;--td:4.5s;--dl:1.2s;--ob:0.6;--op:1;"></div>
+  <div class="star" style="width:1px;height:1px;left:90%;top:3%;--td:2.9s;--dl:2.0s;--ob:0.4;--op:0.85;"></div>
+  <div class="star" style="width:1px;height:1px;left:96%;top:8%;--td:3.6s;--dl:0.1s;--ob:0.35;--op:0.8;"></div>
+  <div class="star" style="width:2px;height:2px;left:5%;top:14%;--td:5.1s;--dl:1.4s;--ob:0.4;--op:0.9;"></div>
+  <div class="star" style="width:1px;height:1px;left:19%;top:17%;--td:2.7s;--dl:0.8s;--ob:0.25;--op:0.65;"></div>
+  <div class="star" style="width:1px;height:1px;left:38%;top:15%;--td:3.9s;--dl:2.3s;--ob:0.3;--op:0.7;"></div>
+  <div class="star" style="width:2px;height:2px;left:55%;top:18%;--td:2.5s;--dl:1.6s;--ob:0.5;--op:0.9;"></div>
+  <div class="star" style="width:1px;height:1px;left:71%;top:13%;--td:4.2s;--dl:0.5s;--ob:0.35;--op:0.75;"></div>
+  <div class="star" style="width:2px;height:2px;left:87%;top:16%;--td:3.1s;--dl:1.9s;--ob:0.6;--op:1;"></div>
+  <!-- A few larger hero stars -->
+  <div class="star" style="width:3px;height:3px;left:28%;top:6%;--td:4.8s;--dl:0.5s;--ob:0.5;--op:1;box-shadow:0 0 4px 1px rgba(255,240,200,0.6);"></div>
+  <div class="star" style="width:3px;height:3px;left:62%;top:10%;--td:5.3s;--dl:1.1s;--ob:0.45;--op:0.95;box-shadow:0 0 4px 1px rgba(255,240,200,0.5);"></div>
+  <div class="star" style="width:3px;height:3px;left:85%;top:5%;--td:4.0s;--dl:2.2s;--ob:0.55;--op:1;box-shadow:0 0 4px 1px rgba(255,240,200,0.6);"></div>
+
+  <!-- Full-page Victorian architecture SVG -->
+  <svg id="bg-svg" width="100%" height="100%" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <!-- Moon glow -->
+      <radialGradient id="moonGlow" cx="50%" cy="50%" r="50%">
+        <stop offset="0%"   stop-color="#fff8e8" stop-opacity="0.95"/>
+        <stop offset="40%"  stop-color="#f0d88a" stop-opacity="0.5"/>
+        <stop offset="100%" stop-color="#b8850a" stop-opacity="0"/>
+      </radialGradient>
+      <!-- Moon halo in sky -->
+      <radialGradient id="moonHalo" cx="50%" cy="50%" r="50%">
+        <stop offset="0%"   stop-color="#e8c870" stop-opacity="0.15"/>
+        <stop offset="100%" stop-color="#a06020" stop-opacity="0"/>
+      </radialGradient>
+      <!-- Window warm glow -->
+      <radialGradient id="winGlow" cx="50%" cy="30%" r="80%">
+        <stop offset="0%"   stop-color="#f5c040" stop-opacity="1"/>
+        <stop offset="60%"  stop-color="#c07018" stop-opacity="0.7"/>
+        <stop offset="100%" stop-color="#7a3800" stop-opacity="0"/>
+      </radialGradient>
+      <!-- Ground fog -->
+      <radialGradient id="fog" cx="50%" cy="50%" r="50%">
+        <stop offset="0%"   stop-color="#3d1e08" stop-opacity="0.5"/>
+        <stop offset="100%" stop-color="#1a0800" stop-opacity="0"/>
+      </radialGradient>
+      <!-- Ambient moonlight glow -->
+      <radialGradient id="ambGlow" cx="50%" cy="100%" r="70%">
+        <stop offset="0%"   stop-color="#101828" stop-opacity="0.7"/>
+        <stop offset="100%" stop-color="#080d18" stop-opacity="0"/>
+      </radialGradient>
+    </defs>
+
+    <!-- ── AMBIENT GROUND WARMTH ── -->
+    <rect x="0" y="0" width="1440" height="900" fill="url(#ambGlow)"/>
+
+    <!-- ── MOON & HALO ── -->
+    <ellipse cx="820" cy="90" rx="160" ry="160" fill="url(#moonHalo)"/>
+    <circle  cx="820" cy="90" r="52" fill="url(#moonGlow)"/>
+    <!-- Moon face — subtle craters -->
+    <circle cx="803" cy="78" r="7" fill="#e8d070" opacity="0.12"/>
+    <circle cx="832" cy="96" r="4" fill="#e8d070" opacity="0.09"/>
+    <circle cx="812" cy="106" r="5" fill="#e8d070" opacity="0.08"/>
+
+    <!-- ── CLOUDS drifting across moon ── -->
+    <g opacity="0.18" fill="#d4b060">
+      <ellipse cx="760" cy="82" rx="55" ry="16"/>
+      <ellipse cx="790" cy="74" rx="40" ry="12"/>
+      <ellipse cx="870" cy="100" rx="65" ry="14"/>
+      <ellipse cx="850" cy="92" rx="38" ry="10"/>
+    </g>
+
+    <!-- ── DISTANT CITY SILHOUETTE (far right, tiny spires) ── -->
+    <g fill="#0d080f" opacity="0.9">
+      <!-- Far-right cluster of buildings -->
+      <rect x="1150" y="480" width="40" height="120"/>
+      <rect x="1160" y="460" width="20" height="20"/>
+      <polygon points="1170,440 1178,460 1162,460"/>
+      <rect x="1200" y="500" width="55" height="100"/>
+      <rect x="1215" y="480" width="25" height="22"/>
+      <polygon points="1227,460 1235,480 1219,480"/>
+      <rect x="1265" y="510" width="45" height="90"/>
+      <rect x="1278" y="492" width="20" height="20"/>
+      <polygon points="1288,474 1295,492 1281,492"/>
+      <rect x="1320" y="488" width="60" height="112"/>
+      <rect x="1335" y="468" width="30" height="22"/>
+      <polygon points="1350,448 1358,468 1342,468"/>
+      <rect x="1390" y="500" width="50" height="100"/>
+      <!-- Far left cluster -->
+      <rect x="0" y="500" width="50" height="100"/>
+      <rect x="55" y="480" width="40" height="120"/>
+      <rect x="65" y="460" width="20" height="22"/>
+      <polygon points="75,440 83,460 67,460"/>
+      <rect x="100" y="510" width="45" height="90"/>
+    </g>
+
+    <!-- ── MAIN LEFT GOTHIC BUILDING ── -->
+    <g fill="#0f0810">
+      <!-- Main tower body -->
+      <rect x="42" y="280" width="110" height="620"/>
+      <!-- Tower top battlements -->
+      <rect x="38" y="265" width="15" height="25"/>
+      <rect x="60" y="258" width="15" height="32"/>
+      <rect x="82" y="252" width="15" height="38"/>
+      <rect x="104" y="258" width="15" height="32"/>
+      <rect x="126" y="265" width="15" height="25"/>
+      <rect x="148" y="272" width="15" height="18"/>
+      <!-- Gothic spire -->
+      <polygon points="97,175 108,255 86,255"/>
+      <polygon points="97,175 102,210 92,210"/>
+      <!-- Spire cross -->
+      <rect x="94" y="178" width="6" height="20" fill="#0f0810"/>
+      <rect x="90" y="186" width="14" height="4" fill="#0f0810"/>
+      <!-- Side wing -->
+      <rect x="152" y="360" width="70" height="540"/>
+      <!-- Wing battlements -->
+      <rect x="149" y="348" width="12" height="18"/>
+      <rect x="165" y="342" width="12" height="24"/>
+      <rect x="181" y="348" width="12" height="18"/>
+      <rect x="197" y="354" width="12" height="12"/>
+      <!-- Small side spire -->
+      <polygon points="178,295 186,343 170,343"/>
+    </g>
+
+    <!-- ── MAIN RIGHT GOTHIC MANOR ── -->
+    <g fill="#0f0810">
+      <!-- Main manor body -->
+      <rect x="1188" y="310" width="130" height="590"/>
+      <!-- Battlements right -->
+      <rect x="1184" y="296" width="14" height="22"/>
+      <rect x="1202" y="288" width="14" height="30"/>
+      <rect x="1220" y="282" width="14" height="36"/>
+      <rect x="1238" y="288" width="14" height="30"/>
+      <rect x="1256" y="296" width="14" height="22"/>
+      <rect x="1274" y="302" width="14" height="16"/>
+      <rect x="1292" y="296" width="14" height="22"/>
+      <rect x="1310" y="290" width="14" height="28"/>
+      <rect x="1328" y="296" width="14" height="22"/>
+      <!-- Right spire -->
+      <polygon points="1253,220 1264,283 1242,283"/>
+      <rect x="1250" y="223" width="6" height="20" fill="#0f0810"/>
+      <rect x="1246" y="231" width="14" height="4" fill="#0f0810"/>
+      <!-- Left annex -->
+      <rect x="1140" y="380" width="55" height="520"/>
+      <rect x="1136" y="368" width="12" height="18"/>
+      <rect x="1152" y="362" width="12" height="24"/>
+      <rect x="1168" y="368" width="12" height="18"/>
+      <polygon points="1163,315 1170,363 1156,363"/>
+    </g>
+
+    <!-- ── CENTRE BACKGROUND BUILDING (atmospheric depth) ── -->
+    <g fill="#110a14" opacity="0.85">
+      <rect x="580" y="380" width="80" height="520"/>
+      <rect x="576" y="366" width="12" height="20"/>
+      <rect x="592" y="358" width="12" height="28"/>
+      <rect x="608" y="352" width="12" height="34"/>
+      <rect x="624" y="358" width="12" height="28"/>
+      <rect x="640" y="366" width="12" height="20"/>
+      <polygon points="620,300 628,353 612,353"/>
+      <rect x="680" y="400" width="60" height="500"/>
+      <rect x="740" y="420" width="50" height="480"/>
+    </g>
+
+    <!-- ── LIT WINDOWS — left building ── -->
+    <!-- Golden warm windows -->
+    <rect x="60" y="340" width="22" height="30" rx="11" fill="url(#winGlow)" opacity="0.85"/>
+    <rect x="100" y="340" width="22" height="30" rx="11" fill="url(#winGlow)" opacity="0.75"/>
+    <rect x="60" y="400" width="22" height="30" rx="11" fill="url(#winGlow)" opacity="0.9"/>
+    <rect x="100" y="400" width="22" height="30" rx="11" fill="#e8a020" opacity="0.15"/>
+    <rect x="60" y="460" width="22" height="30" rx="11" fill="url(#winGlow)" opacity="0.6"/>
+    <rect x="100" y="470" width="22" height="30" rx="11" fill="url(#winGlow)" opacity="0.8"/>
+    <rect x="165" y="400" width="18" height="26" rx="9" fill="url(#winGlow)" opacity="0.7"/>
+    <rect x="165" y="450" width="18" height="26" rx="9" fill="url(#winGlow)" opacity="0.5"/>
+    <!-- Window glow halos left -->
+    <ellipse cx="71" cy="355" rx="20" ry="25" fill="#f5a020" opacity="0.06"/>
+    <ellipse cx="71" cy="415" rx="20" ry="25" fill="#f5a020" opacity="0.08"/>
+
+    <!-- ── LIT WINDOWS — right building ── -->
+    <rect x="1200" y="360" width="22" height="30" rx="11" fill="url(#winGlow)" opacity="0.8"/>
+    <rect x="1240" y="360" width="22" height="30" rx="11" fill="url(#winGlow)" opacity="0.9"/>
+    <rect x="1280" y="360" width="22" height="30" rx="11" fill="url(#winGlow)" opacity="0.6"/>
+    <rect x="1200" y="420" width="22" height="30" rx="11" fill="url(#winGlow)" opacity="0.7"/>
+    <rect x="1240" y="420" width="22" height="30" rx="11" fill="#f0c040" opacity="0.2"/>
+    <rect x="1280" y="420" width="22" height="30" rx="11" fill="url(#winGlow)" opacity="0.85"/>
+    <rect x="1150" y="420" width="18" height="26" rx="9" fill="url(#winGlow)" opacity="0.65"/>
+    <rect x="1150" y="470" width="18" height="26" rx="9" fill="url(#winGlow)" opacity="0.5"/>
+    <!-- Window glow halos right -->
+    <ellipse cx="1251" cy="375" rx="22" ry="28" fill="#f5a020" opacity="0.07"/>
+    <ellipse cx="1291" cy="435" rx="20" ry="24" fill="#f5a020" opacity="0.06"/>
+
+    <!-- ── FOREGROUND IRON FENCE ── -->
+    <g stroke="#1a1010" stroke-width="2.5" fill="none">
+      <!-- Horizontal rails -->
+      <line x1="0" y1="760" x2="1440" y2="760"/>
+      <line x1="0" y1="790" x2="1440" y2="790"/>
+    </g>
+    <!-- Fence posts & spears -->
+    <g fill="#1c0f0a">
+      <!-- Left side dense fence -->
+      <rect x="0"   y="720" width="6" height="80"/>  <polygon points="3,720 0,712 6,712"/>
+      <rect x="18"  y="724" width="5" height="76"/>  <polygon points="20.5,724 18,716 23,716"/>
+      <rect x="36"  y="720" width="6" height="80"/>  <polygon points="39,720 36,712 42,712"/>
+      <rect x="54"  y="724" width="5" height="76"/>  <polygon points="56.5,724 54,716 59,716"/>
+      <rect x="72"  y="720" width="6" height="80"/>  <polygon points="75,720 72,712 78,712"/>
+      <rect x="90"  y="724" width="5" height="76"/>  <polygon points="92.5,724 90,716 95,716"/>
+      <rect x="108" y="720" width="6" height="80"/>  <polygon points="111,720 108,712 114,712"/>
+      <rect x="126" y="724" width="5" height="76"/>  <polygon points="128.5,724 126,716 131,716"/>
+      <rect x="144" y="720" width="6" height="80"/>  <polygon points="147,720 144,712 150,712"/>
+      <rect x="162" y="724" width="5" height="76"/>  <polygon points="164.5,724 162,716 167,716"/>
+      <rect x="180" y="720" width="6" height="80"/>  <polygon points="183,720 180,712 186,712"/>
+      <rect x="198" y="724" width="5" height="76"/>  <polygon points="200.5,724 198,716 203,716"/>
+      <rect x="216" y="720" width="6" height="80"/>  <polygon points="219,720 216,712 222,712"/>
+      <rect x="234" y="724" width="5" height="76"/>  <polygon points="236.5,724 234,716 239,716"/>
+      <rect x="252" y="720" width="6" height="80"/>  <polygon points="255,720 252,712 258,712"/>
+      <!-- Centre gap (gate area implied) -->
+      <!-- Right side fence -->
+      <rect x="1188" y="720" width="6" height="80"/>  <polygon points="1191,720 1188,712 1194,712"/>
+      <rect x="1206" y="724" width="5" height="76"/>  <polygon points="1208.5,724 1206,716 1211,716"/>
+      <rect x="1224" y="720" width="6" height="80"/>  <polygon points="1227,720 1224,712 1230,712"/>
+      <rect x="1242" y="724" width="5" height="76"/>  <polygon points="1244.5,724 1242,716 1247,716"/>
+      <rect x="1260" y="720" width="6" height="80"/>  <polygon points="1263,720 1260,712 1266,712"/>
+      <rect x="1278" y="724" width="5" height="76"/>  <polygon points="1280.5,724 1278,716 1283,716"/>
+      <rect x="1296" y="720" width="6" height="80"/>  <polygon points="1299,720 1296,712 1302,712"/>
+      <rect x="1314" y="724" width="5" height="76"/>  <polygon points="1316.5,724 1314,716 1319,716"/>
+      <rect x="1332" y="720" width="6" height="80"/>  <polygon points="1335,720 1332,712 1338,712"/>
+      <rect x="1350" y="724" width="5" height="76"/>  <polygon points="1352.5,724 1350,716 1355,716"/>
+      <rect x="1368" y="720" width="6" height="80"/>  <polygon points="1371,720 1368,712 1374,712"/>
+      <rect x="1386" y="724" width="5" height="76"/>  <polygon points="1388.5,724 1386,716 1391,716"/>
+      <rect x="1404" y="720" width="6" height="80"/>  <polygon points="1407,720 1404,712 1410,712"/>
+      <rect x="1422" y="724" width="5" height="76"/>  <polygon points="1424.5,724 1422,716 1427,716"/>
+      <rect x="1434" y="720" width="6" height="80"/>  <polygon points="1437,720 1434,712 1440,712"/>
+    </g>
+
+    <!-- ── COBBLESTONE GROUND ── -->
+    <rect x="0" y="800" width="1440" height="100" fill="#0e0808"/>
+    <!-- Cobble texture lines -->
+    <g stroke="#1a1010" stroke-width="0.6" opacity="0.6">
+      <line x1="0"   y1="820" x2="1440" y2="820"/>
+      <line x1="0"   y1="840" x2="1440" y2="840"/>
+      <line x1="0"   y1="860" x2="1440" y2="860"/>
+      <line x1="0"   y1="880" x2="1440" y2="880"/>
+      <!-- Vertical cobble divisions -->
+      <line x1="60"  y1="800" x2="60"  y2="900"/>
+      <line x1="120" y1="800" x2="120" y2="900"/>
+      <line x1="180" y1="800" x2="180" y2="900"/>
+      <line x1="240" y1="800" x2="240" y2="900"/>
+      <line x1="300" y1="800" x2="300" y2="900"/>
+      <line x1="360" y1="800" x2="360" y2="900"/>
+      <line x1="420" y1="800" x2="420" y2="900"/>
+      <line x1="480" y1="800" x2="480" y2="900"/>
+      <line x1="540" y1="800" x2="540" y2="900"/>
+      <line x1="600" y1="800" x2="600" y2="900"/>
+      <line x1="660" y1="800" x2="660" y2="900"/>
+      <line x1="720" y1="800" x2="720" y2="900"/>
+      <line x1="780" y1="800" x2="780" y2="900"/>
+      <line x1="840" y1="800" x2="840" y2="900"/>
+      <line x1="900" y1="800" x2="900" y2="900"/>
+      <line x1="960" y1="800" x2="960" y2="900"/>
+      <line x1="1020" y1="800" x2="1020" y2="900"/>
+      <line x1="1080" y1="800" x2="1080" y2="900"/>
+      <line x1="1140" y1="800" x2="1140" y2="900"/>
+      <line x1="1200" y1="800" x2="1200" y2="900"/>
+      <line x1="1260" y1="800" x2="1260" y2="900"/>
+      <line x1="1320" y1="800" x2="1320" y2="900"/>
+      <line x1="1380" y1="800" x2="1380" y2="900"/>
+    </g>
+
+    <!-- ── GROUND AMBIENT CANDLE GLOW pooling on cobbles ── -->
+    <ellipse cx="150"  cy="810" rx="120" ry="35" fill="#8b3a06" opacity="0.12"/>
+    <ellipse cx="720"  cy="810" rx="200" ry="40" fill="#6b2e04" opacity="0.08"/>
+    <ellipse cx="1300" cy="810" rx="120" ry="35" fill="#8b3a06" opacity="0.12"/>
+
+    <!-- ── STREET LAMPS ── -->
+    <!-- Left lamp -->
+    <g fill="#2a1810" stroke="#3a2010" stroke-width="0.5">
+      <rect x="267" y="640" width="7" height="165"/>
+      <rect x="264" y="800" width="13" height="8"/>
+      <!-- Lamp arm -->
+      <path d="M270 640 Q285 620 290 610" stroke="#3a2010" stroke-width="3" fill="none"/>
+      <!-- Lamp housing -->
+      <rect x="282" y="600" width="22" height="28" rx="3"/>
+      <polygon points="293,595 286,600 300,600"/>
+    </g>
+    <!-- Lamp glow left -->
+    <ellipse cx="293" cy="618" rx="28" ry="28" fill="#f5a020" opacity="0.18"/>
+    <ellipse cx="293" cy="618" rx="12" ry="12" fill="#f5c040" opacity="0.35"/>
+    <rect x="286" y="604" width="14" height="20" rx="2" fill="#f5c040" opacity="0.6"/>
+    <!-- Ground light pool left -->
+    <ellipse cx="290" cy="805" rx="55" ry="18" fill="#c47018" opacity="0.1"/>
+
+    <!-- Right lamp -->
+    <g fill="#2a1810" stroke="#3a2010" stroke-width="0.5">
+      <rect x="1166" y="640" width="7" height="165"/>
+      <rect x="1163" y="800" width="13" height="8"/>
+      <path d="M1170 640 Q1155 620 1150 610" stroke="#3a2010" stroke-width="3" fill="none"/>
+      <rect x="1136" y="600" width="22" height="28" rx="3"/>
+      <polygon points="1147,595 1140,600 1154,600"/>
+    </g>
+    <ellipse cx="1147" cy="618" rx="28" ry="28" fill="#f5a020" opacity="0.18"/>
+    <ellipse cx="1147" cy="618" rx="12" ry="12" fill="#f5c040" opacity="0.35"/>
+    <rect x="1140" y="604" width="14" height="20" rx="2" fill="#f5c040" opacity="0.6"/>
+    <ellipse cx="1150" cy="805" rx="55" ry="18" fill="#c47018" opacity="0.1"/>
+
+    <!-- ── BARE TREE — left ── -->
+    <g stroke="#130c08" stroke-width="1.5" fill="none" opacity="0.9">
+      <line x1="340" y1="900" x2="350" y2="680"/>
+      <line x1="350" y1="680" x2="330" y2="580"/>
+      <line x1="350" y1="680" x2="368" y2="600"/>
+      <line x1="330" y1="580" x2="310" y2="520"/>
+      <line x1="330" y1="580" x2="342" y2="510"/>
+      <line x1="368" y1="600" x2="384" y2="540"/>
+      <line x1="368" y1="600" x2="360" y2="532"/>
+      <line x1="310" y1="520" x2="296" y2="474"/>
+      <line x1="310" y1="520" x2="318" y2="468"/>
+      <line x1="342" y1="510" x2="350" y2="464"/>
+      <line x1="384" y1="540" x2="396" y2="496"/>
+      <!-- Fine branches -->
+      <line x1="296" y1="474" x2="288" y2="452"/>
+      <line x1="296" y1="474" x2="304" y2="448"/>
+      <line x1="318" y1="468" x2="312" y2="444"/>
+      <line x1="318" y1="468" x2="326" y2="446"/>
+      <line x1="350" y1="464" x2="344" y2="440"/>
+      <line x1="350" y1="464" x2="356" y2="438"/>
+      <line x1="396" y1="496" x2="404" y2="470"/>
+      <line x1="396" y1="496" x2="390" y2="468"/>
+    </g>
+
+    <!-- ── BARE TREE — right ── -->
+    <g stroke="#130c08" stroke-width="1.5" fill="none" opacity="0.9">
+      <line x1="1100" y1="900" x2="1090" y2="680"/>
+      <line x1="1090" y1="680" x2="1110" y2="580"/>
+      <line x1="1090" y1="680" x2="1072" y2="600"/>
+      <line x1="1110" y1="580" x2="1130" y2="520"/>
+      <line x1="1110" y1="580" x2="1098" y2="510"/>
+      <line x1="1072" y1="600" x2="1056" y2="540"/>
+      <line x1="1072" y1="600" x2="1080" y2="532"/>
+      <line x1="1130" y1="520" x2="1144" y2="474"/>
+      <line x1="1130" y1="520" x2="1122" y2="468"/>
+      <line x1="1098" y1="510" x2="1090" y2="464"/>
+      <line x1="1056" y1="540" x2="1044" y2="496"/>
+      <line x1="1144" y1="474" x2="1152" y2="452"/>
+      <line x1="1144" y1="474" x2="1136" y2="448"/>
+      <line x1="1122" y1="468" x2="1128" y2="444"/>
+      <line x1="1122" y1="468" x2="1114" y2="446"/>
+      <line x1="1090" y1="464" x2="1096" y2="440"/>
+      <line x1="1090" y1="464" x2="1084" y2="438"/>
+      <line x1="1044" y1="496" x2="1036" y2="470"/>
+      <line x1="1044" y1="496" x2="1050" y2="468"/>
+    </g>
+
+    <!-- ── FOG LAYER (ground mist) ── -->
+    <ellipse cx="720" cy="850" rx="900" ry="80" fill="#1e0c04" opacity="0.45"/>
+    <ellipse cx="200" cy="830" rx="350" ry="55" fill="#200e05" opacity="0.3"/>
+    <ellipse cx="1250" cy="835" rx="300" ry="50" fill="#200e05" opacity="0.3"/>
+
+    <!-- ── IVY on buildings (simple curved lines) ── -->
+    <g stroke="#1a2a10" stroke-width="1" fill="none" opacity="0.5">
+      <path d="M152 450 C148 430 155 410 152 390 C149 370 155 350 150 330"/>
+      <path d="M152 390 C144 382 138 372 132 365"/>
+      <path d="M152 430 C160 422 166 412 170 405"/>
+      <path d="M1188 430 C1192 410 1185 390 1188 370 C1191 350 1185 330 1188 310"/>
+      <path d="M1188 390 C1196 382 1202 372 1208 365"/>
+      <path d="M1188 430 C1180 422 1174 412 1170 405"/>
+    </g>
+
+    <!-- ── LIGHT ATMOSPHERIC HAZE across middle ── -->
+    <rect x="0" y="500" width="1440" height="200" fill="#150a0d" opacity="0.15"/>
+
+  </svg>
+
+  <!-- Floating dust motes -->
+  <div class="mote" style="left:15%;bottom:40%;--mt:9s;--md:0s;"></div>
+  <div class="mote" style="left:30%;bottom:35%;--mt:12s;--md:2s;"></div>
+  <div class="mote" style="left:48%;bottom:42%;--mt:8s;--md:4s;"></div>
+  <div class="mote" style="left:65%;bottom:38%;--mt:11s;--md:1s;"></div>
+  <div class="mote" style="left:80%;bottom:45%;--mt:10s;--md:3s;"></div>
+  <div class="mote" style="left:22%;bottom:50%;--mt:14s;--md:5s;"></div>
+  <div class="mote" style="left:72%;bottom:48%;--mt:7s;--md:6s;"></div>
+
+  <!-- Candle glow halos on ground -->
+  <div class="candle-halo" style="left:14%;width:180px;height:80px;background:#7a3206;--ho:0.18;--hp:3.5s;"></div>
+  <div class="candle-halo" style="left:75%;width:180px;height:80px;background:#7a3206;--ho:0.15;--hp:4.8s;"></div>
+  <div class="candle-halo" style="left:44%;width:260px;height:100px;background:#5a2504;--ho:0.1;--hp:6s;bottom:30%;"></div>
+
+  <!-- Floating lanterns canvas -->
+  <canvas id="lantern-canvas"></canvas>
+
+</div>
+
+<div id="scene">
+
+  <!-- ════ SCREEN 0: ENVELOPE ════ -->
+  <div id="screen-envelope" class="envelope-wrap">
+    <div class="envelope" onclick="openEnvelope()">
+      <svg viewBox="0 0 340 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <filter id="paper-tex">
+            <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" result="noise"/>
+            <feColorMatrix type="saturate" values="0" in="noise" result="gray"/>
+            <feBlend in="SourceGraphic" in2="gray" mode="multiply" result="blend"/>
+            <feComposite in="blend" in2="SourceGraphic" operator="in"/>
+          </filter>
+        </defs>
+        <!-- Envelope body -->
+        <rect x="4" y="4" width="332" height="232" rx="4" fill="#e8d4b0" filter="url(#paper-tex)"/>
+        <rect x="4" y="4" width="332" height="232" rx="4" fill="none" stroke="#b89050" stroke-width="0.8"/>
+        <!-- Envelope flap (closed) -->
+        <path d="M4 4 L170 110 L336 4 Z" fill="#dbc89a" stroke="#b89050" stroke-width="0.6"/>
+        <!-- Bottom triangles -->
+        <path d="M4 236 L170 130 L4 4 Z" fill="#e0cba0"/>
+        <path d="M336 236 L170 130 L336 4 Z" fill="#d8c195"/>
+        <path d="M4 236 L170 130 L336 236 Z" fill="#e8d4b0"/>
+        <!-- Inner lines -->
+        <path d="M4 236 L170 130 L336 236" fill="none" stroke="#b89050" stroke-width="0.6"/>
+        <path d="M4 4 L170 130" fill="none" stroke="#b89050" stroke-width="0.4" opacity="0.5"/>
+        <path d="M336 4 L170 130" fill="none" stroke="#b89050" stroke-width="0.4" opacity="0.5"/>
+        <!-- Wax seal -->
+        <circle cx="170" cy="136" r="22" fill="#8b1a1a"/>
+        <circle cx="170" cy="136" r="20" fill="#a02020"/>
+        <circle cx="170" cy="136" r="17" fill="none" stroke="#c84040" stroke-width="0.5"/>
+        <!-- Lily in wax seal -->
+        <g transform="translate(170,136)" fill="#e8b8b8" opacity="0.9">
+          <ellipse cx="0" cy="-8" rx="3" ry="7" transform="rotate(0)"/>
+          <ellipse cx="0" cy="-8" rx="3" ry="7" transform="rotate(60)"/>
+          <ellipse cx="0" cy="-8" rx="3" ry="7" transform="rotate(120)"/>
+          <ellipse cx="0" cy="-8" rx="3" ry="7" transform="rotate(180)"/>
+          <ellipse cx="0" cy="-8" rx="3" ry="7" transform="rotate(240)"/>
+          <ellipse cx="0" cy="-8" rx="3" ry="7" transform="rotate(300)"/>
+          <circle cx="0" cy="0" r="3" fill="#f0d0d0"/>
+        </g>
+        <!-- Border ornament -->
+        <rect x="10" y="10" width="320" height="220" rx="2" fill="none" stroke="#b89050" stroke-width="0.4" stroke-dasharray="4 3" opacity="0.5"/>
+        <!-- Corner flourishes -->
+        <g stroke="#b89050" stroke-width="0.7" fill="none" opacity="0.7">
+          <path d="M18 18 Q22 14 26 18 Q22 22 18 18"/>
+          <path d="M322 18 Q318 14 314 18 Q318 22 322 18"/>
+          <path d="M18 222 Q22 226 26 222 Q22 218 18 222"/>
+          <path d="M322 222 Q318 226 314 222 Q318 218 322 222"/>
+        </g>
+      </svg>
+    </div>
+    <p class="envelope-label">— Pulsa para abrir —</p>
+  </div>
+
+  <!-- ════ SCREEN 1: INTRODUCTION ════ -->
+  <div id="screen-intro" class="sheet">
+    <div class="ornament-border"></div>
+    <div class="corner corner-tl"><svg viewBox="0 0 24 24" fill="none" stroke="#a07840" stroke-width="0.8"><path d="M2 2 Q12 2 12 12 M2 2 L2 8 M2 2 L8 2"/><circle cx="12" cy="12" r="2" fill="#a07840"/></svg></div>
+    <div class="corner corner-tr"><svg viewBox="0 0 24 24" fill="none" stroke="#a07840" stroke-width="0.8"><path d="M2 2 Q12 2 12 12 M2 2 L2 8 M2 2 L8 2"/><circle cx="12" cy="12" r="2" fill="#a07840"/></svg></div>
+    <div class="corner corner-bl"><svg viewBox="0 0 24 24" fill="none" stroke="#a07840" stroke-width="0.8"><path d="M2 2 Q12 2 12 12 M2 2 L2 8 M2 2 L8 2"/><circle cx="12" cy="12" r="2" fill="#a07840"/></svg></div>
+    <div class="corner corner-br"><svg viewBox="0 0 24 24" fill="none" stroke="#a07840" stroke-width="0.8"><path d="M2 2 Q12 2 12 12 M2 2 L2 8 M2 2 L8 2"/><circle cx="12" cy="12" r="2" fill="#a07840"/></svg></div>
+
+    <!-- Lily deco top -->
+    <div class="deco-top">
+      <svg class="deco-lily" width="60" height="80" viewBox="0 0 60 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <line x1="30" y1="78" x2="30" y2="40" stroke="#8a7260" stroke-width="0.8"/>
+        <path d="M30 38 C22 28 16 16 20 8 C24 0 30 2 30 2 C30 2 36 0 40 8 C44 16 38 28 30 38Z" fill="#c4a882" opacity="0.6"/>
+        <path d="M30 38 C38 30 50 24 54 16 C58 8 54 2 54 2" stroke="#a07840" stroke-width="0.6" fill="none"/>
+        <path d="M30 38 C22 30 10 24 6 16 C2 8 6 2 6 2" stroke="#a07840" stroke-width="0.6" fill="none"/>
+        <ellipse cx="30" cy="10" rx="4" ry="6" fill="#b8962e" opacity="0.5"/>
+        <!-- leaves -->
+        <path d="M30 55 C20 50 14 44 18 40 C22 36 28 42 30 48Z" fill="#8a7260" opacity="0.4"/>
+        <path d="M30 55 C40 50 46 44 42 40 C38 36 32 42 30 48Z" fill="#8a7260" opacity="0.4"/>
+      </svg>
+    </div>
+
+    <div class="fade-text">
+      <p class="salutation">Mei,</p>
+      <div class="poem-text left-align">
+        en medio de todo lo que ocurre sin pausa,<br>
+        quise crear algo distinto…<br>
+        un instante que no dependa del azar,<br>
+        sino de lo que elegimos.<br><br>
+        No es una invitación cualquiera,<br>
+        ni una simple idea.<br><br>
+        Es el inicio de algo pensado,<br>
+        paso a paso…<br>
+        entre vos y yo.<br><br>
+        Por eso, te invito a recorrer esto conmigo,<br>
+        y a que, en cada elección,<br>
+        le demos forma a una noche verdaderamente especial.
+      </div>
+    </div>
+
+    <div class="divider">✦ · ✦</div>
+
+    <div class="deco-bottom">
+      <svg width="120" height="14" viewBox="0 0 120 14" fill="none">
+        <line x1="0" y1="7" x2="44" y2="7" stroke="#a07840" stroke-width="0.5"/>
+        <path d="M48 7 L54 3 L60 7 L54 11 Z" fill="#b8962e" opacity="0.6"/>
+        <path d="M60 7 L66 3 L72 7 L66 11 Z" fill="#a07840" opacity="0.4"/>
+        <line x1="76" y1="7" x2="120" y2="7" stroke="#a07840" stroke-width="0.5"/>
+      </svg>
+    </div>
+
+    <button class="continue-btn" onclick="goTo(2)">Comenzar la velada →</button>
+  </div>
+
+  <!-- ════ SCREEN 2: CAPÍTULO I ════ -->
+  <div id="screen-2" class="sheet">
+    <div class="ornament-border"></div>
+    <div class="corner corner-tl"><svg viewBox="0 0 24 24" fill="none" stroke="#a07840" stroke-width="0.8"><path d="M2 2 Q12 2 12 12 M2 2 L2 8 M2 2 L8 2"/><circle cx="12" cy="12" r="2" fill="#a07840"/></svg></div>
+    <div class="corner corner-tr"><svg viewBox="0 0 24 24" fill="none" stroke="#a07840" stroke-width="0.8"><path d="M2 2 Q12 2 12 12 M2 2 L2 8 M2 2 L8 2"/><circle cx="12" cy="12" r="2" fill="#a07840"/></svg></div>
+    <div class="corner corner-bl"><svg viewBox="0 0 24 24" fill="none" stroke="#a07840" stroke-width="0.8"><path d="M2 2 Q12 2 12 12 M2 2 L2 8 M2 2 L8 2"/><circle cx="12" cy="12" r="2" fill="#a07840"/></svg></div>
+    <div class="corner corner-br"><svg viewBox="0 0 24 24" fill="none" stroke="#a07840" stroke-width="0.8"><path d="M2 2 Q12 2 12 12 M2 2 L2 8 M2 2 L8 2"/><circle cx="12" cy="12" r="2" fill="#a07840"/></svg></div>
+
+    <div class="progress" id="progress-2"></div>
+    <p class="chapter-label">Capítulo I</p>
+    <p class="chapter-title">El Origen</p>
+    <p class="chapter-question">¿Dónde nos encontramos para esta noche?</p>
+    <div class="divider">— ✦ —</div>
+
+    <!-- Ink stains for depth -->
+    <div class="ink-stain ink-stain-1"></div>
+    <div class="ink-stain ink-stain-2"></div>
+
+    <!-- Quill lateral decoration -->
+    <div class="quill-lateral">
+      <svg width="22" height="110" viewBox="0 0 22 110" fill="none">
+        <path d="M11 108 C11 108 9 80 5 55 C1 32 1 12 8 4 C12 0 16 2 18 8 C22 18 18 42 14 62 C11 78 11 108 11 108Z" fill="#a07840"/>
+        <path d="M11 108 L10.5 55" stroke="#c4a882" stroke-width="0.5"/>
+        <path d="M8 4 C10 18 11 38 11 60" stroke="#e8d4b0" stroke-width="0.3" fill="none"/>
+        <path d="M18 8 C16 20 14 38 12 58" stroke="#e8d4b0" stroke-width="0.2" fill="none" opacity="0.5"/>
+      </svg>
+    </div>
+
+    <div class="fade-text">
+      <div class="poem-text">
+        No es el lugar en sí lo que da comienzo,<br>
+        sino aquello que en él se insinúa.<br><br>
+        Un espacio, apenas un pretexto…<br>
+        para albergar lo que aún no ha sido,<br>
+        pero ya, en silencio, comienza a latir.
+      </div>
+
+      <div class="choices">
+        <button class="choice-btn" onclick="selectChoice(this, 'lugar', 'Mi casa')">Mi casa</button>
+        <button class="choice-btn" onclick="selectChoice(this, 'lugar', 'Tu casa')">Tu casa</button>
+      </div>
+    </div>
+
+    <button class="continue-btn hidden" id="continue-2" onclick="goTo(3)">Seguir adelante →</button>
+  </div>
+
+  <!-- ════ SCREEN 3: CAPÍTULO II ════ -->
+  <div id="screen-3" class="sheet">
+    <div class="ornament-border"></div>
+    <div class="corner corner-tl"><svg viewBox="0 0 24 24" fill="none" stroke="#a07840" stroke-width="0.8"><path d="M2 2 Q12 2 12 12 M2 2 L2 8 M2 2 L8 2"/><circle cx="12" cy="12" r="2" fill="#a07840"/></svg></div>
+    <div class="corner corner-tr"><svg viewBox="0 0 24 24" fill="none" stroke="#a07840" stroke-width="0.8"><path d="M2 2 Q12 2 12 12 M2 2 L2 8 M2 2 L8 2"/><circle cx="12" cy="12" r="2" fill="#a07840"/></svg></div>
+    <div class="corner corner-bl"><svg viewBox="0 0 24 24" fill="none" stroke="#a07840" stroke-width="0.8"><path d="M2 2 Q12 2 12 12 M2 2 L2 8 M2 2 L8 2"/><circle cx="12" cy="12" r="2" fill="#a07840"/></svg></div>
+    <div class="corner corner-br"><svg viewBox="0 0 24 24" fill="none" stroke="#a07840" stroke-width="0.8"><path d="M2 2 Q12 2 12 12 M2 2 L2 8 M2 2 L8 2"/><circle cx="12" cy="12" r="2" fill="#a07840"/></svg></div>
+
+    <div class="progress" id="progress-3"></div>
+    <p class="chapter-label">Capítulo II</p>
+    <p class="chapter-title">El Primer Instante</p>
+    <p class="chapter-question">¿Cómo te gustaría que comience este momento?</p>
+    <div class="divider">— ✦ —</div>
+    <div class="ink-stain ink-stain-1"></div>
+    <div class="ink-stain ink-stain-2"></div>
+
+    <div class="fade-text">
+      <div class="poem-text">
+        Existe un instante primero,<br>
+        tan leve que casi se desvanece al nombrarlo…<br><br>
+        y sin embargo, es allí donde la noche<br>
+        encuentra su pulso inicial,<br>
+        su más delicada intención.
+      </div>
+
+      <div class="choices">
+        <button class="choice-btn" onclick="selectChoice(this, 'actividad_inicial', 'Gaming juntos')">Gaming juntos</button>
+        <button class="choice-btn" onclick="selectChoice(this, 'actividad_inicial', 'Pintar un cuadro')">Pintar un cuadro</button>
+      </div>
+    </div>
+
+    <button class="continue-btn hidden" id="continue-3" onclick="goTo(4)">Pasar página →</button>
+  </div>
+
+  <!-- ════ SCREEN 4: CAPÍTULO III ════ -->
+  <div id="screen-4" class="sheet">
+    <div class="ornament-border"></div>
+    <div class="corner corner-tl"><svg viewBox="0 0 24 24" fill="none" stroke="#a07840" stroke-width="0.8"><path d="M2 2 Q12 2 12 12 M2 2 L2 8 M2 2 L8 2"/><circle cx="12" cy="12" r="2" fill="#a07840"/></svg></div>
+    <div class="corner corner-tr"><svg viewBox="0 0 24 24" fill="none" stroke="#a07840" stroke-width="0.8"><path d="M2 2 Q12 2 12 12 M2 2 L2 8 M2 2 L8 2"/><circle cx="12" cy="12" r="2" fill="#a07840"/></svg></div>
+    <div class="corner corner-bl"><svg viewBox="0 0 24 24" fill="none" stroke="#a07840" stroke-width="0.8"><path d="M2 2 Q12 2 12 12 M2 2 L2 8 M2 2 L8 2"/><circle cx="12" cy="12" r="2" fill="#a07840"/></svg></div>
+    <div class="corner corner-br"><svg viewBox="0 0 24 24" fill="none" stroke="#a07840" stroke-width="0.8"><path d="M2 2 Q12 2 12 12 M2 2 L2 8 M2 2 L8 2"/><circle cx="12" cy="12" r="2" fill="#a07840"/></svg></div>
+
+    <div class="progress" id="progress-4"></div>
+    <p class="chapter-label">Capítulo III</p>
+    <p class="chapter-title">Entre lo Simple y lo Nuestro</p>
+    <p class="chapter-question">¿Cómo compartimos la cena?</p>
+    <div class="divider">— ✦ —</div>
+    <div class="ink-stain ink-stain-1"></div>
+    <div class="ink-stain ink-stain-2"></div>
+
+    <div class="fade-text">
+      <div class="poem-text">
+        No todo lo valioso se anuncia con grandeza.<br><br>
+        A veces habita en lo sencillo,<br>
+        en lo compartido sin prisa,<br>
+        en aquello que, sin pretenderlo,<br>
+        termina por volverse inolvidable.
+      </div>
+
+      <div class="choices">
+        <button class="choice-btn" onclick="selectChoice(this, 'cena', 'Pedir comida')">Pedir comida</button>
+        <button class="choice-btn" onclick="selectChoice(this, 'cena', 'Cocinar juntos')">Cocinar juntos</button>
+      </div>
+    </div>
+
+    <button class="continue-btn hidden" id="continue-4" onclick="goTo(5)">Continuar →</button>
+  </div>
+
+  <!-- ════ SCREEN 5: CAPÍTULO IV ════ -->
+  <div id="screen-5" class="sheet">
+    <div class="ornament-border"></div>
+    <div class="corner corner-tl"><svg viewBox="0 0 24 24" fill="none" stroke="#a07840" stroke-width="0.8"><path d="M2 2 Q12 2 12 12 M2 2 L2 8 M2 2 L8 2"/><circle cx="12" cy="12" r="2" fill="#a07840"/></svg></div>
+    <div class="corner corner-tr"><svg viewBox="0 0 24 24" fill="none" stroke="#a07840" stroke-width="0.8"><path d="M2 2 Q12 2 12 12 M2 2 L2 8 M2 2 L8 2"/><circle cx="12" cy="12" r="2" fill="#a07840"/></svg></div>
+    <div class="corner corner-bl"><svg viewBox="0 0 24 24" fill="none" stroke="#a07840" stroke-width="0.8"><path d="M2 2 Q12 2 12 12 M2 2 L2 8 M2 2 L8 2"/><circle cx="12" cy="12" r="2" fill="#a07840"/></svg></div>
+    <div class="corner corner-br"><svg viewBox="0 0 24 24" fill="none" stroke="#a07840" stroke-width="0.8"><path d="M2 2 Q12 2 12 12 M2 2 L2 8 M2 2 L8 2"/><circle cx="12" cy="12" r="2" fill="#a07840"/></svg></div>
+
+    <div class="progress" id="progress-5"></div>
+    <p class="chapter-label">Capítulo IV</p>
+    <p class="chapter-title">Hora de Calma</p>
+    <p class="chapter-question">¿Cómo dejamos que continúe la noche?</p>
+    <div class="divider">— ✦ —</div>
+    <div class="ink-stain ink-stain-1"></div>
+    <div class="ink-stain ink-stain-2"></div>
+
+    <div class="fade-text">
+      <div class="poem-text">
+        Y llega, casi sin aviso,<br>
+        ese remanso donde el mundo se disipa…<br><br>
+        donde el tiempo cede,<br>
+        y sólo permanece lo esencial:<br>
+        la calma, la cercanía… nosotros.
+      </div>
+
+      <div class="choices">
+        <button class="choice-btn" onclick="selectChoice(this, 'actividad_final', 'Ver una película')">Ver una película</button>
+        <button class="choice-btn" onclick="selectChoice(this, 'actividad_final', 'Empezar una serie')">Empezar una serie</button>
+      </div>
+    </div>
+
+    <button class="continue-btn hidden" id="continue-5" onclick="goTo(6)">Seguir adelante →</button>
+  </div>
+
+  <!-- ════ SCREEN 6: CAPÍTULO V ════ -->
+  <div id="screen-6" class="sheet">
+    <div class="ornament-border"></div>
+    <div class="corner corner-tl"><svg viewBox="0 0 24 24" fill="none" stroke="#a07840" stroke-width="0.8"><path d="M2 2 Q12 2 12 12 M2 2 L2 8 M2 2 L8 2"/><circle cx="12" cy="12" r="2" fill="#a07840"/></svg></div>
+    <div class="corner corner-tr"><svg viewBox="0 0 24 24" fill="none" stroke="#a07840" stroke-width="0.8"><path d="M2 2 Q12 2 12 12 M2 2 L2 8 M2 2 L8 2"/><circle cx="12" cy="12" r="2" fill="#a07840"/></svg></div>
+    <div class="corner corner-bl"><svg viewBox="0 0 24 24" fill="none" stroke="#a07840" stroke-width="0.8"><path d="M2 2 Q12 2 12 12 M2 2 L2 8 M2 2 L8 2"/><circle cx="12" cy="12" r="2" fill="#a07840"/></svg></div>
+    <div class="corner corner-br"><svg viewBox="0 0 24 24" fill="none" stroke="#a07840" stroke-width="0.8"><path d="M2 2 Q12 2 12 12 M2 2 L2 8 M2 2 L8 2"/><circle cx="12" cy="12" r="2" fill="#a07840"/></svg></div>
+
+    <div class="progress" id="progress-6"></div>
+    <p class="chapter-label">Capítulo V</p>
+    <p class="chapter-title">Lo que no se Dice</p>
+    <p class="chapter-question">¿Qué detalle no se me puede escapar para que esta noche sea única?</p>
+    <div class="divider">— ✦ —</div>
+    <div class="ink-stain ink-stain-1"></div>
+    <div class="ink-stain ink-stain-2"></div>
+
+    <div class="fade-text">
+      <div class="poem-text">
+        Siempre queda algo no pronunciado,<br>
+        un matiz sutil, casi secreto…<br><br>
+        aquello que no se impone,<br>
+        pero que, al revelarse,<br>
+        otorga a todo un sentido distinto.<br><br>
+        Si deseas dejarlo entre líneas,<br>
+        sabrá encontrar su lugar.
+      </div>
+
+      <!-- Quill deco -->
+      <div style="text-align:center; margin: 0.5rem 0;">
+        <svg width="40" height="60" viewBox="0 0 40 60" fill="none" opacity="0.45">
+          <path d="M20 58 C20 58 18 40 10 25 C4 14 2 6 8 2 C14 -2 22 8 28 20 C34 32 32 48 20 58Z" fill="#a07840"/>
+          <path d="M20 58 L19 30" stroke="#c4a882" stroke-width="0.6"/>
+          <path d="M8 2 C14 8 18 20 20 35" stroke="#e8d4b0" stroke-width="0.4" fill="none"/>
+        </svg>
+      </div>
+
+      <label class="field-label" style="text-align:center; display:block; margin-bottom: 0.5rem;">— escríbelo aquí —</label>
+      <textarea class="secret-textarea" id="detalle" placeholder="Escribe aquí tu secreto…" rows="4"></textarea>
+    </div>
+
+    <button class="continue-btn" onclick="goTo(7)" style="margin-top: 1.5rem;">Pasar página →</button>
+  </div>
+
+  <!-- ════ SCREEN 7: CIERRE ════ -->
+  <div id="screen-7" class="sheet">
+    <div class="ornament-border"></div>
+    <div class="corner corner-tl"><svg viewBox="0 0 24 24" fill="none" stroke="#a07840" stroke-width="0.8"><path d="M2 2 Q12 2 12 12 M2 2 L2 8 M2 2 L8 2"/><circle cx="12" cy="12" r="2" fill="#a07840"/></svg></div>
+    <div class="corner corner-tr"><svg viewBox="0 0 24 24" fill="none" stroke="#a07840" stroke-width="0.8"><path d="M2 2 Q12 2 12 12 M2 2 L2 8 M2 2 L8 2"/><circle cx="12" cy="12" r="2" fill="#a07840"/></svg></div>
+    <div class="corner corner-bl"><svg viewBox="0 0 24 24" fill="none" stroke="#a07840" stroke-width="0.8"><path d="M2 2 Q12 2 12 12 M2 2 L2 8 M2 2 L8 2"/><circle cx="12" cy="12" r="2" fill="#a07840"/></svg></div>
+    <div class="corner corner-br"><svg viewBox="0 0 24 24" fill="none" stroke="#a07840" stroke-width="0.8"><path d="M2 2 Q12 2 12 12 M2 2 L2 8 M2 2 L8 2"/><circle cx="12" cy="12" r="2" fill="#a07840"/></svg></div>
+
+    <!-- ══ LILY ILLUSTRATION — detailed botanical ══ -->
+    <div class="deco-top" style="opacity:1; margin-bottom: 1.2rem;">
+      <svg id="closing-lily" width="160" height="210" viewBox="0 0 160 210" fill="none" xmlns="http://www.w3.org/2000/svg"
+           style="filter: drop-shadow(0 2px 8px rgba(184,150,46,0.18));">
+
+        <!-- ── STEM — graceful S-curve ── -->
+        <path d="M80 208 C80 208 79 185 78 165 C77 148 76 135 78 120 C80 108 82 98 80 85"
+              stroke="#6b5a3a" stroke-width="2" fill="none"/>
+        <!-- Stem highlight -->
+        <path d="M80 208 C80 208 81 182 82 162 C83 146 83 134 81 119"
+              stroke="#9a8055" stroke-width="0.6" fill="none" opacity="0.5"/>
+
+        <!-- ── LEAF 1 — lower left, large ── -->
+        <path d="M79 168 C60 158 44 142 46 126 C48 114 60 112 68 120 C74 126 77 148 80 162 Z"
+              fill="#4a6030" opacity="0.72"/>
+        <path d="M79 168 C62 156 50 140 52 126 C54 118 62 116 68 120"
+              stroke="#7a9050" stroke-width="0.5" fill="none" opacity="0.5"/>
+        <!-- Leaf vein -->
+        <path d="M79 168 C68 152 58 136 54 124" stroke="#3a5025" stroke-width="0.4" fill="none" opacity="0.6"/>
+
+        <!-- ── LEAF 2 — lower right, medium ── -->
+        <path d="M79 155 C98 144 116 128 112 114 C108 103 96 103 88 111 C83 117 80 136 80 150 Z"
+              fill="#4a6030" opacity="0.65"/>
+        <path d="M79 155 C96 142 110 128 108 115"
+              stroke="#7a9050" stroke-width="0.5" fill="none" opacity="0.45"/>
+        <path d="M79 155 C90 140 104 126 106 116" stroke="#3a5025" stroke-width="0.4" fill="none" opacity="0.6"/>
+
+        <!-- ── LEAF 3 — upper left, small ── -->
+        <path d="M79 120 C66 112 56 100 58 90 C60 82 68 81 74 87 C77 92 78 106 80 118 Z"
+              fill="#4a6030" opacity="0.55"/>
+        <path d="M79 120 C68 110 60 98 60 90" stroke="#3a5025" stroke-width="0.4" fill="none" opacity="0.5"/>
+
+        <!-- ── BUD (closed flower, side) ── -->
+        <path d="M80 85 C80 85 78 78 76 70 C74 62 75 56 80 52 C85 56 86 62 84 70 C82 78 80 85 80 85 Z"
+              fill="#c8a870" opacity="0.7"/>
+        <path d="M80 85 C80 85 79 77 79 68 C79 62 79.5 56 80 52"
+              stroke="#a08040" stroke-width="0.5" fill="none" opacity="0.5"/>
+        <!-- Bud sepals -->
+        <path d="M76 70 C72 64 70 56 73 50 C75 47 77 48 78 52" fill="#4a6030" opacity="0.55"/>
+        <path d="M84 70 C88 64 90 56 87 50 C85 47 83 48 82 52" fill="#4a6030" opacity="0.55"/>
+
+        <!-- ── OPEN FLOWER — 6 trumpet petals ── -->
+        <!-- Petal 1 — top centre, arching back -->
+        <path d="M80 85 C74 72 62 58 58 44 C54 32 58 22 66 20 C72 18 76 24 78 34 C80 44 80 62 80 78 Z"
+              fill="#d4b480" opacity="0.82"/>
+        <path d="M80 85 C75 71 65 56 62 42 C60 32 62 24 66 22"
+              stroke="#b8962e" stroke-width="0.6" fill="none" opacity="0.5"/>
+        <!-- Petal 1 central vein -->
+        <path d="M80 82 C76 68 68 52 64 38 C62 30 63 24 66 21"
+              stroke="#c4a060" stroke-width="0.5" fill="none" opacity="0.6"/>
+
+        <!-- Petal 2 — upper right -->
+        <path d="M80 85 C86 72 98 60 104 46 C110 33 106 22 98 20 C92 19 88 25 86 35 C84 45 82 64 80 78 Z"
+              fill="#c8a870" opacity="0.78"/>
+        <path d="M80 82 C85 68 95 54 100 42 C104 32 102 24 98 22"
+              stroke="#c4a060" stroke-width="0.5" fill="none" opacity="0.6"/>
+
+        <!-- Petal 3 — right, sweeping outward -->
+        <path d="M80 85 C90 78 106 72 116 62 C126 52 126 40 118 34 C112 29 106 32 102 40 C98 48 90 66 82 80 Z"
+              fill="#d4b480" opacity="0.75"/>
+        <path d="M80 83 C89 76 104 70 112 60 C120 50 120 40 116 35"
+              stroke="#c4a060" stroke-width="0.5" fill="none" opacity="0.5"/>
+
+        <!-- Petal 4 — lower right, curling forward -->
+        <path d="M80 85 C88 84 104 86 114 82 C124 78 128 68 122 60 C116 53 108 56 102 64 C96 72 88 80 80 84 Z"
+              fill="#c8a870" opacity="0.72"/>
+        <path d="M80 84 C87 83 102 84 112 80 C120 76 122 68 118 62"
+              stroke="#c4a060" stroke-width="0.5" fill="none" opacity="0.5"/>
+
+        <!-- Petal 5 — lower left, curling forward -->
+        <path d="M80 85 C72 84 56 86 46 82 C36 78 32 68 38 60 C44 53 52 56 58 64 C64 72 72 80 80 84 Z"
+              fill="#d4b480" opacity="0.72"/>
+        <path d="M80 84 C73 83 58 84 48 80 C40 76 38 68 42 62"
+              stroke="#c4a060" stroke-width="0.5" fill="none" opacity="0.5"/>
+
+        <!-- Petal 6 — left, sweeping outward -->
+        <path d="M80 85 C70 78 54 72 44 62 C34 52 34 40 42 34 C48 29 54 32 58 40 C62 48 70 66 78 80 Z"
+              fill="#c8a870" opacity="0.75"/>
+        <path d="M80 83 C71 76 56 70 48 60 C40 50 40 40 44 35"
+              stroke="#c4a060" stroke-width="0.5" fill="none" opacity="0.5"/>
+
+        <!-- ── STAMENS — 6 delicate filaments with anthers ── -->
+        <g stroke="#a07838" stroke-width="0.8" opacity="0.85">
+          <line x1="80" y1="84" x2="80" y2="64"/>
+          <line x1="80" y1="84" x2="88" y2="66"/>
+          <line x1="80" y1="84" x2="90" y2="74"/>
+          <line x1="80" y1="84" x2="72" y2="66"/>
+          <line x1="80" y1="84" x2="70" y2="74"/>
+          <line x1="80" y1="84" x2="80" y2="62"/>
+        </g>
+        <!-- Anther heads — tiny ellipses -->
+        <ellipse cx="80" cy="63"  rx="2.5" ry="1.5" fill="#c8960a" opacity="0.9" transform="rotate(-5 80 63)"/>
+        <ellipse cx="88" cy="65"  rx="2.5" ry="1.5" fill="#c8960a" opacity="0.85" transform="rotate(20 88 65)"/>
+        <ellipse cx="91" cy="73"  rx="2.5" ry="1.5" fill="#c8960a" opacity="0.8" transform="rotate(35 91 73)"/>
+        <ellipse cx="72" cy="65"  rx="2.5" ry="1.5" fill="#b8860a" opacity="0.85" transform="rotate(-20 72 65)"/>
+        <ellipse cx="69" cy="73"  rx="2.5" ry="1.5" fill="#b8860a" opacity="0.8" transform="rotate(-35 69 73)"/>
+        <ellipse cx="80" cy="61"  rx="2.5" ry="1.5" fill="#c8960a" opacity="0.9"/>
+
+        <!-- ── PISTIL — central style ── -->
+        <line x1="80" y1="84" x2="80" y2="60" stroke="#8b6020" stroke-width="1.2" opacity="0.7"/>
+        <ellipse cx="80" cy="59" rx="3" ry="2" fill="#b8962e" opacity="0.9"/>
+
+        <!-- ── POLLEN DUSTING — tiny dots ── -->
+        <circle cx="84" cy="78" r="1"   fill="#d4a020" opacity="0.4"/>
+        <circle cx="77" cy="76" r="0.8" fill="#d4a020" opacity="0.35"/>
+        <circle cx="86" cy="80" r="0.7" fill="#c8960a" opacity="0.3"/>
+        <circle cx="74" cy="80" r="0.8" fill="#c8960a" opacity="0.35"/>
+        <circle cx="80" cy="75" r="1"   fill="#e0b030" opacity="0.3"/>
+
+        <!-- ── SUBTLE GLOW around flower centre ── -->
+        <circle cx="80" cy="72" r="18" fill="#f5d060" opacity="0.05"/>
+        <circle cx="80" cy="72" r="10" fill="#f5d060" opacity="0.06"/>
+
+      </svg>
+    </div>
+
+    <p class="chapter-label" style="letter-spacing: 0.3em;">Cierre</p>
+    <p class="chapter-title" style="font-style: italic;">Bajando la Luna</p>
+    <div class="divider">— ✦ —</div>
+    <div class="ink-stain ink-stain-1" style="opacity:0.03;"></div>
+
+    <div class="fade-text">
+      <div class="poem-text">
+        Y así, lo que aún no ha ocurrido<br>
+        comienza, sin embargo, a existir.<br><br>
+        Quedate tranquila…<br>
+        de lo demás, me ocuparé yo.
+      </div>
+    </div>
+
+    <!-- Summary of choices -->
+    <div id="summary" style="margin: 1.5rem 0; padding: 1.1rem 1.4rem; border: 1px solid rgba(160,120,64,0.25); border-top: 2px solid rgba(160,120,64,0.3); background: rgba(255,255,255,0.12); position:relative;">
+      <div style="position:absolute; top:-8px; left:50%; transform:translateX(-50%); background:var(--paper); padding:0 8px; color:var(--gold); font-size:0.7rem; letter-spacing:0.2em; font-family:'Playfair Display',serif; opacity:0.8;">✦ la velada ✦</div>
+      <p style="font-family:'IM Fell English',serif; font-style:italic; font-size:0.88rem; color:var(--ink-faint); line-height:2.1;" id="summary-text"></p>
+    </div>
+
+    <!-- Formspree hidden form -->
+    <form id="hidden-form" method="POST" action="https://formspree.io/f/mojynkvw">
+      <input type="hidden" name="lugar" id="f-lugar">
+      <input type="hidden" name="actividad_inicial" id="f-actividad_inicial">
+      <input type="hidden" name="cena" id="f-cena">
+      <input type="hidden" name="actividad_final" id="f-actividad_final">
+      <input type="hidden" name="detalle" id="f-detalle">
+    </form>
+
+    <button class="send-btn" id="send-btn" onclick="sendForm()">Enviar</button>
+    <div id="feedback"></div>
+
+    <div class="deco-bottom">
+      <svg width="100" height="12" viewBox="0 0 100 12" fill="none">
+        <line x1="0" y1="6" x2="36" y2="6" stroke="#a07840" stroke-width="0.5"/>
+        <path d="M40 6 L46 2 L50 6 L46 10Z" fill="#b8962e" opacity="0.5"/>
+        <line x1="54" y1="6" x2="100" y2="6" stroke="#a07840" stroke-width="0.5"/>
+      </svg>
+    </div>
+  </div>
+
+</div><!-- /scene -->
+
+<!-- ═══ PETAL BURST CANVAS ═══ -->
+<canvas id="petal-canvas"></canvas>
+
+<script>
+const TOTAL_CHAPTERS = 5;
+let choices = {};
+let currentScreen = 0;
+let musicPlaying = false;
+let musicStarted = false;
+
+/* ─── AUDIO: Web Audio API generative ambient piano ─── */
+let audioCtx = null;
+let masterGain = null;
+let ambientNodes = [];
+let audioInterval = null;
+
+// Pentatonic scale frequencies — romantic, no dissonance
+const NOTES = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33, 659.25, 783.99, 880.00];
+// Soft pad chord roots
+const CHORDS = [
+  [261.63, 329.63, 392.00, 523.25],  // C maj
+  [293.66, 369.99, 440.00, 587.33],  // D min
+  [246.94, 329.63, 392.00, 493.88],  // G/B
+  [261.63, 311.13, 392.00, 493.88],  // C add9 variant
+];
+let chordIdx = 0;
+let noteTimeout = null;
+
+function createCtx() {
+  if (audioCtx) return;
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  masterGain = audioCtx.createGain();
+  masterGain.gain.setValueAtTime(0, audioCtx.currentTime);
+  masterGain.connect(audioCtx.destination);
+}
+
+function fadeGain(target, duration) {
+  if (!masterGain) return;
+  masterGain.gain.cancelScheduledValues(audioCtx.currentTime);
+  masterGain.gain.setValueAtTime(masterGain.gain.value, audioCtx.currentTime);
+  masterGain.gain.linearRampToValueAtTime(target, audioCtx.currentTime + duration);
+}
+
+function playNote(freq, startTime, duration, gain) {
+  if (!audioCtx) return;
+  const osc = audioCtx.createOscillator();
+  const env = audioCtx.createGain();
+  const filt = audioCtx.createBiquadFilter();
+
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(freq, startTime);
+
+  filt.type = 'lowpass';
+  filt.frequency.setValueAtTime(1200, startTime);
+  filt.Q.setValueAtTime(0.5, startTime);
+
+  env.gain.setValueAtTime(0, startTime);
+  env.gain.linearRampToValueAtTime(gain, startTime + 0.15);
+  env.gain.setValueAtTime(gain, startTime + duration * 0.7);
+  env.gain.linearRampToValueAtTime(0, startTime + duration);
+
+  osc.connect(filt);
+  filt.connect(env);
+  env.connect(masterGain);
+
+  osc.start(startTime);
+  osc.stop(startTime + duration + 0.05);
+}
+
+function playChordLayer() {
+  if (!audioCtx || !musicPlaying) return;
+  const chord = CHORDS[chordIdx % CHORDS.length];
+  const now = audioCtx.currentTime;
+  // Strum gently
+  chord.forEach((freq, i) => {
+    playNote(freq, now + i * 0.08, 4.5, 0.06);
+    // Add octave shimmer softly
+    if (i < 2) playNote(freq * 2, now + i * 0.12 + 0.2, 3.5, 0.025);
+  });
+  chordIdx++;
+}
+
+function playMelodyNote() {
+  if (!audioCtx || !musicPlaying) return;
+  const freq = NOTES[Math.floor(Math.random() * NOTES.length)];
+  const now = audioCtx.currentTime;
+  playNote(freq, now, 2.2, 0.04);
+  // Echo
+  playNote(freq, now + 0.18, 1.8, 0.018);
+}
+
+function scheduleMusic() {
+  if (!musicPlaying) return;
+  playChordLayer();
+  let t = 0;
+  // Schedule 8–12 melody notes over the next 5 seconds
+  const count = 6 + Math.floor(Math.random() * 5);
+  for (let i = 0; i < count; i++) {
+    t += 0.3 + Math.random() * 0.8;
+    const delay = t;
+    setTimeout(() => { if (musicPlaying) playMelodyNote(); }, delay * 1000);
+  }
+  audioInterval = setTimeout(scheduleMusic, 5200);
+}
+
+function startGenerativeMusic() {
+  createCtx();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  musicPlaying = true;
+  musicStarted = true;
+  fadeGain(0.55, 2.5);
+  scheduleMusic();
+  updateAudioBtn();
+  showAudioBtn();
+}
+
+function stopGenerativeMusic() {
+  musicPlaying = false;
+  if (audioInterval) { clearTimeout(audioInterval); audioInterval = null; }
+  if (masterGain) fadeGain(0, 1.2);
+  updateAudioBtn();
+}
+
+function initAudio() {
+  startGenerativeMusic();
+}
+
+function showAudioBtn() {
+  document.getElementById('audio-btn').classList.add('visible');
+}
+
+function toggleAudio() {
+  if (!musicStarted) {
+    startGenerativeMusic();
+  } else if (musicPlaying) {
+    stopGenerativeMusic();
+  } else {
+    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+    musicPlaying = true;
+    musicStarted = true;
+    fadeGain(0.55, 1.5);
+    scheduleMusic();
+    updateAudioBtn();
+  }
+}
+
+function updateAudioBtn() {
+  const icon  = document.getElementById('note-icon');
+  const label = document.getElementById('audio-label');
+  if (musicPlaying) {
+    icon.textContent  = '♪';
+    label.textContent = 'Pausar';
+  } else {
+    icon.textContent  = '♩';
+    label.textContent = 'Música';
+  }
+}
+
+/* ─── NAVIGATION ─── */
+function openEnvelope() {
+  const env = document.getElementById('screen-envelope');
+  env.style.transition = 'opacity 0.7s ease, transform 0.7s ease';
+  env.style.opacity = '0';
+  env.style.transform = 'scale(0.93) translateY(-14px)';
+  initAudio();
+  setTimeout(() => {
+    env.style.display = 'none';
+    showScreen('screen-intro');
+    currentScreen = 1;
+  }, 700);
+}
+
+function showScreen(id) {
+  const el = document.getElementById(id);
+  el.classList.add('active');
+  el.style.animation = 'none';
+  el.offsetHeight;
+  el.style.animation = '';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  // Trigger lily entrance on closing screen
+  if (id === 'screen-7') {
+    const lily = document.getElementById('closing-lily');
+    if (lily) {
+      lily.classList.remove('lily-visible', 'lily-swaying');
+      setTimeout(() => lily.classList.add('lily-visible'), 400);
+    }
+  }
+}
+
+function hideAll() {
+  document.querySelectorAll('.sheet.active').forEach(s => {
+    s.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+    s.style.opacity = '0';
+    s.style.transform = 'translateY(-8px) scale(0.998)';
+    setTimeout(() => {
+      s.classList.remove('active');
+      s.style.opacity = '';
+      s.style.transform = '';
+      s.style.transition = '';
+    }, 600);
+  });
+}
+
+function goTo(n) {
+  hideAll();
+  setTimeout(() => {
+    const id = n === 1 ? 'screen-intro' : 'screen-' + n;
+    showScreen(id);
+    if (n >= 2 && n <= 6) renderProgress(n);
+    const fade = document.querySelector('#' + id + ' .fade-text');
+    if (fade) {
+      fade.style.animation = 'none';
+      fade.offsetHeight;
+      fade.style.animation = '';
+    }
+    currentScreen = n;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, 640);
+}
+
+function goToFinalScreen() {
+  buildSummary();
+  goTo(7);
+}
+
+function renderProgress(screenNum) {
+  const chapterScreens = [2, 3, 4, 5, 6];
+  const idx = chapterScreens.indexOf(screenNum);
+  if (idx < 0) return;
+  const el = document.getElementById('progress-' + screenNum);
+  if (!el) return;
+  el.innerHTML = '';
+  chapterScreens.forEach((s, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'dot' + (i < idx ? ' done' : i === idx ? ' active' : '');
+    el.appendChild(dot);
+  });
+}
+
+function selectChoice(btn, field, value) {
+  choices[field] = value;
+  const parent = btn.closest('.choices');
+  parent.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  const screenNum = btn.closest('.sheet').id.replace('screen-', '');
+  const cont = document.getElementById('continue-' + screenNum);
+  if (cont) {
+    cont.classList.remove('hidden');
+    cont.style.opacity = '0';
+    cont.style.transition = 'opacity 0.6s ease, transform 0.5s ease';
+    cont.style.transform = 'translateY(4px)';
+    requestAnimationFrame(() => {
+      cont.style.opacity = '1';
+      cont.style.transform = 'translateY(0)';
+    });
+  }
+}
+
+function buildSummary() {
+  const labels = {
+    lugar:            'El lugar',
+    actividad_inicial:'El primer instante',
+    cena:             'La cena',
+    actividad_final:  'El momento de calma'
+  };
+  const lines = [];
+  for (const [k, label] of Object.entries(labels)) {
+    if (choices[k]) lines.push(label + ': ' + choices[k]);
+  }
+  const detalle = document.getElementById('detalle').value.trim();
+  if (detalle) lines.push('El secreto: ' + detalle);
+  document.getElementById('summary-text').innerHTML = lines.join('<br>');
+}
+
+/* ─── PETAL BURST ─── */
+function launchPetalBurst() {
+  const canvas = document.getElementById('petal-canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+  canvas.classList.add('active');
+
+  // Petal shapes: small lily-petal ellipses in warm tones
+  const COLORS = ['#d4b480','#c8a870','#e8cfa0','#b8962e','#d4af5a','#f0d898','#c4a060','#e0c888'];
+  const petals = [];
+  const count = 55;
+
+  for (let i = 0; i < count; i++) {
+    const angle = (Math.random() * Math.PI * 2);
+    const speed = 1.5 + Math.random() * 3.5;
+    petals.push({
+      x: canvas.width  * (0.3 + Math.random() * 0.4),
+      y: canvas.height * (0.35 + Math.random() * 0.25),
+      vx: Math.cos(angle) * speed * (0.5 + Math.random()),
+      vy: Math.sin(angle) * speed - 2.5 - Math.random() * 2,
+      gravity: 0.06 + Math.random() * 0.04,
+      w: 10 + Math.random() * 16,
+      h: 5  + Math.random() * 8,
+      rot: Math.random() * Math.PI * 2,
+      rotV: (Math.random() - 0.5) * 0.12,
+      color: COLORS[Math.floor(Math.random() * COLORS.length)],
+      alpha: 1,
+      decay: 0.008 + Math.random() * 0.006,
+    });
+  }
+
+  let frame = 0;
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    let alive = false;
+    petals.forEach(p => {
+      if (p.alpha <= 0) return;
+      alive = true;
+      p.x  += p.vx;
+      p.vy += p.gravity;
+      p.y  += p.vy;
+      p.rot += p.rotV;
+      p.alpha -= p.decay;
+
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, p.alpha);
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot);
+      ctx.beginPath();
+      ctx.ellipse(0, 0, p.w / 2, p.h / 2, 0, 0, Math.PI * 2);
+      ctx.fillStyle = p.color;
+      ctx.fill();
+      // petal vein
+      ctx.beginPath();
+      ctx.moveTo(0, -p.h / 2);
+      ctx.lineTo(0,  p.h / 2);
+      ctx.strokeStyle = 'rgba(180,140,40,0.3)';
+      ctx.lineWidth = 0.5;
+      ctx.stroke();
+      ctx.restore();
+    });
+
+    frame++;
+    if (alive && frame < 280) {
+      requestAnimationFrame(draw);
+    } else {
+      canvas.classList.remove('active');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+  }
+  requestAnimationFrame(draw);
+}
+
+async function sendForm() {
+  const btn = document.getElementById('send-btn');
+  const fb  = document.getElementById('feedback');
+
+  document.getElementById('f-lugar').value             = choices.lugar || '';
+  document.getElementById('f-actividad_inicial').value  = choices.actividad_inicial || '';
+  document.getElementById('f-cena').value              = choices.cena || '';
+  document.getElementById('f-actividad_final').value   = choices.actividad_final || '';
+  document.getElementById('f-detalle').value           = document.getElementById('detalle').value.trim();
+
+  btn.disabled = true;
+
+  // ── Sending state ──
+  fb.style.transition = 'opacity 0.4s ease';
+  fb.style.opacity = '0';
+  setTimeout(() => {
+    fb.textContent = '— sellando la carta… —';
+    fb.style.color = 'var(--ink-faint)';
+    fb.style.opacity = '1';
+  }, 80);
+
+  try {
+    const resp = await fetch('https://formspree.io/f/mojynkvw', {
+      method: 'POST',
+      body: new FormData(document.getElementById('hidden-form')),
+      headers: { 'Accept': 'application/json' }
+    });
+    if (resp.ok) {
+      // ── Success sequence ──
+      fb.style.opacity = '0';
+      setTimeout(() => {
+        // 1. Show message
+        fb.classList.add('success');
+        fb.innerHTML = '✦ &nbsp; Ha sido enviado &nbsp; ✦<br><span style="font-size:0.82rem; opacity:0.75;">La velada comienza a tomar forma…</span>';
+        fb.style.color = 'var(--gold)';
+        fb.style.opacity = '1';
+        btn.textContent = 'Enviado ✦';
+
+        // 2. Petal burst
+        launchPetalBurst();
+
+        // 3. Lily starts swaying
+        const lily = document.getElementById('closing-lily');
+        if (lily) lily.classList.add('lily-swaying');
+
+        // 4. Music — play a gentle resolve chord if audio is active
+        if (musicPlaying && audioCtx) {
+          const resolveNotes = [261.63, 329.63, 392.00, 523.25, 659.25];
+          resolveNotes.forEach((freq, i) => {
+            playNote(freq, audioCtx.currentTime + i * 0.12, 5, 0.055);
+          });
+        }
+
+        // 5. After 3s — closing envelope appears
+        setTimeout(() => showClosingEnvelope(), 3000);
+      }, 500);
+    } else {
+      throw new Error('error');
+    }
+  } catch(e) {
+    fb.style.opacity = '0';
+    setTimeout(() => {
+      fb.textContent = 'Algo no llegó bien. Por favor, intenta nuevamente.';
+      fb.style.color = '#8b1a1a';
+      fb.style.opacity = '1';
+      btn.disabled = false;
+    }, 500);
+  }
+}
+
+/* ─── FLOATING LANTERNS ─── */
+(function() {
+  function initLanterns() {
+    const canvas = document.getElementById('lantern-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    function resize() {
+      canvas.width  = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    // Each lantern: position, size, speed, sway, glow phase
+    const LANTERNS = [];
+    const COUNT = 22; // enough to feel like a celebration, not cluttered
+
+    function makeLantern(initial) {
+      const w = 18 + Math.random() * 28;        // width  18–46px
+      const h = w * (1.15 + Math.random() * 0.3); // taller than wide
+      const x = Math.random() * canvas.width;
+      // if initial, scatter across whole screen height; otherwise start below
+      const y = initial
+        ? canvas.height * (0.1 + Math.random() * 0.95)
+        : canvas.height + h + Math.random() * 80;
+      return {
+        x, y, w, h,
+        vy:    0.18 + Math.random() * 0.38,     // rise speed px/frame
+        swayA: 6 + Math.random() * 10,           // horizontal sway amplitude
+        swayF: 0.003 + Math.random() * 0.004,    // sway frequency
+        swayP: Math.random() * Math.PI * 2,      // phase offset
+        glow:  0.55 + Math.random() * 0.45,      // base glow opacity
+        glowP: Math.random() * Math.PI * 2,      // flicker phase
+        glowF: 0.04 + Math.random() * 0.05,      // flicker frequency
+        alpha: initial ? (0.4 + Math.random() * 0.6) : 0, // fade in
+        fadeIn: !initial,
+        scale: 0.45 + Math.random() * 0.75,      // size variety
+        tint:  Math.random(),                    // warm colour variation
+      };
+    }
+
+    // Seed initial lanterns spread across screen
+    for (let i = 0; i < COUNT; i++) LANTERNS.push(makeLantern(true));
+
+    let frame = 0;
+
+    function drawLantern(ctx, l) {
+      const { x, y, scale, glow, glowP, glowF, tint } = l;
+      const w = l.w * scale;
+      const h = l.h * scale;
+      const cx = x, cy = y;
+
+      ctx.save();
+      ctx.globalAlpha = l.alpha;
+
+      // ── Outer glow halo ──
+      const flickerGlow = glow + Math.sin(frame * glowF + glowP) * 0.18;
+      const haloR = w * 1.35;
+      const halo = ctx.createRadialGradient(cx, cy - h * 0.15, 0, cx, cy - h * 0.15, haloR);
+      // warm amber with slight variation per lantern
+      const r1 = tint > 0.5 ? 255 : 240;
+      const g1 = 140 + Math.floor(tint * 60);
+      halo.addColorStop(0,   `rgba(${r1},${g1},20,${flickerGlow * 0.45})`);
+      halo.addColorStop(0.5, `rgba(${r1},${g1},10,${flickerGlow * 0.15})`);
+      halo.addColorStop(1,   'rgba(200,100,0,0)');
+      ctx.fillStyle = halo;
+      ctx.beginPath();
+      ctx.ellipse(cx, cy - h * 0.15, haloR, haloR * 0.8, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // ── Lantern body — rounded rectangle shape ──
+      const bx = cx - w / 2, by = cy - h * 0.85;
+      const bw = w, bh = h * 0.82;
+      const rx = w * 0.42;
+
+      // Body gradient — bright centre fading to paper edge
+      const bodyGrad = ctx.createRadialGradient(
+        cx, by + bh * 0.4, bh * 0.05,
+        cx, by + bh * 0.4, bh * 0.65
+      );
+      const innerBright = flickerGlow;
+      const r2 = tint > 0.6 ? 255 : 248;
+      const g2 = 160 + Math.floor(tint * 55);
+      bodyGrad.addColorStop(0,    `rgba(${r2},${g2},80,${innerBright * 0.95})`);
+      bodyGrad.addColorStop(0.35, `rgba(240,140,30,${innerBright * 0.85})`);
+      bodyGrad.addColorStop(0.7,  `rgba(200,90,10,${innerBright * 0.65})`);
+      bodyGrad.addColorStop(1,    `rgba(160,60,0,${innerBright * 0.4})`);
+
+      ctx.fillStyle = bodyGrad;
+      ctx.beginPath();
+      ctx.moveTo(bx + rx, by);
+      ctx.lineTo(bx + bw - rx, by);
+      ctx.quadraticCurveTo(bx + bw, by, bx + bw, by + rx);
+      ctx.lineTo(bx + bw, by + bh - rx);
+      ctx.quadraticCurveTo(bx + bw, by + bh, bx + bw - rx, by + bh);
+      ctx.lineTo(bx + rx, by + bh);
+      ctx.quadraticCurveTo(bx, by + bh, bx, by + bh - rx);
+      ctx.lineTo(bx, by + rx);
+      ctx.quadraticCurveTo(bx, by, bx + rx, by);
+      ctx.closePath();
+      ctx.fill();
+
+      // ── Paper texture lines — creases ──
+      ctx.strokeStyle = `rgba(180,90,10,${0.18 * l.alpha})`;
+      ctx.lineWidth = 0.6 * scale;
+      // vertical seam
+      ctx.beginPath(); ctx.moveTo(cx, by + bh * 0.1); ctx.lineTo(cx, by + bh * 0.9); ctx.stroke();
+      // horizontal ring
+      ctx.beginPath(); ctx.ellipse(cx, by + bh * 0.45, bw * 0.48, bh * 0.06, 0, 0, Math.PI * 2); ctx.stroke();
+
+      // ── Bottom opening — dark ellipse ──
+      ctx.fillStyle = `rgba(80,30,0,${0.55 * flickerGlow})`;
+      ctx.beginPath();
+      ctx.ellipse(cx, by + bh, bw * 0.38, bh * 0.07, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // ── Flame inside bottom ──
+      const flameH = h * 0.12 * scale;
+      const flameGrad = ctx.createRadialGradient(cx, by + bh - flameH * 0.3, 0, cx, by + bh - flameH * 0.3, flameH);
+      flameGrad.addColorStop(0,   `rgba(255,255,200,${flickerGlow})`);
+      flameGrad.addColorStop(0.4, `rgba(255,180,20,${flickerGlow * 0.8})`);
+      flameGrad.addColorStop(1,   'rgba(255,100,0,0)');
+      ctx.fillStyle = flameGrad;
+      ctx.beginPath();
+      ctx.ellipse(cx, by + bh - flameH * 0.2, flameH * 0.35, flameH * 0.6, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // ── Top cap — small dark tip ──
+      ctx.fillStyle = `rgba(140,70,5,${0.7 * l.alpha})`;
+      ctx.beginPath();
+      ctx.ellipse(cx, by, bw * 0.25, bh * 0.045, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // ── Thin wire/string at bottom ──
+      ctx.strokeStyle = `rgba(160,80,10,${0.35 * l.alpha})`;
+      ctx.lineWidth = 0.5 * scale;
+      ctx.beginPath();
+      ctx.moveTo(cx - w * 0.18, by + bh);
+      ctx.lineTo(cx, by + bh + h * 0.1);
+      ctx.lineTo(cx + w * 0.18, by + bh);
+      ctx.stroke();
+
+      ctx.restore();
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      frame++;
+
+      LANTERNS.forEach((l, i) => {
+        // Sway
+        l.x += Math.sin(frame * l.swayF + l.swayP) * 0.35;
+        // Rise
+        l.y -= l.vy;
+        // Fade in when spawning from below
+        if (l.fadeIn && l.alpha < 0.9) l.alpha = Math.min(0.9, l.alpha + 0.008);
+
+        // Reset when off screen top — respawn from bottom
+        if (l.y < -l.h * l.scale - 10) {
+          const fresh = makeLantern(false);
+          fresh.x = Math.random() * canvas.width;
+          LANTERNS[i] = fresh;
+          return;
+        }
+
+        drawLantern(ctx, l);
+      });
+
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+  }
+
+  // Start after DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initLanterns);
+  } else {
+    initLanterns();
+  }
+})();
+
+/* ─── CLOSING ENVELOPE SEQUENCE ─── */
+function showClosingEnvelope() {
+  const overlay = document.getElementById('closing-overlay');
+  overlay.classList.add('visible');
+  setTimeout(() => {
+    document.getElementById('env-flap').classList.add('closed');
+  }, 600);
+  setTimeout(() => {
+    const heart = document.getElementById('final-heart');
+    heart.classList.add('visible');
+    setTimeout(() => heart.classList.add('beating'), 820);
+  }, 2000);
+  setTimeout(() => {
+    document.getElementById('final-tagline').classList.add('visible');
+  }, 2800);
+}
+
+/* ─── INIT ─── */
+window.addEventListener('load', () => {
+  const s6btn = document.querySelector('#screen-6 .continue-btn');
+  if (s6btn) {
+    s6btn.removeAttribute('onclick');
+    s6btn.addEventListener('click', goToFinalScreen);
+  }
+});
+</script>
+
+<!-- ═══ CLOSING ENVELOPE OVERLAY ═══ -->
+<div id="closing-overlay">
+
+  <!-- Envelope SVG — animated flap -->
+  <svg id="closing-envelope-svg" width="320" height="230" viewBox="0 0 320 230" fill="none" xmlns="http://www.w3.org/2000/svg" style="perspective: 600px;">
+    <defs>
+      <filter id="env-shadow">
+        <feDropShadow dx="0" dy="6" stdDeviation="12" flood-color="#b8962e" flood-opacity="0.2"/>
+      </filter>
+    </defs>
+
+    <!-- Envelope body -->
+    <rect x="4" y="4" width="312" height="222" rx="4" fill="#e8d4b0"/>
+    <rect x="4" y="4" width="312" height="222" rx="4" fill="none" stroke="#b89050" stroke-width="0.8"/>
+
+    <!-- Bottom triangle left -->
+    <path d="M4 226 L160 128 L4 4 Z" fill="#e0cba0"/>
+    <!-- Bottom triangle right -->
+    <path d="M316 226 L160 128 L316 4 Z" fill="#d8c195"/>
+    <!-- Bottom triangle centre -->
+    <path d="M4 226 L160 128 L316 226 Z" fill="#e8d4b0"/>
+    <!-- Bottom seam -->
+    <path d="M4 226 L160 128 L316 226" fill="none" stroke="#b89050" stroke-width="0.5"/>
+    <!-- Side seams -->
+    <path d="M4 4 L160 128" fill="none" stroke="#b89050" stroke-width="0.3" opacity="0.4"/>
+    <path d="M316 4 L160 128" fill="none" stroke="#b89050" stroke-width="0.3" opacity="0.4"/>
+
+    <!-- Inner border -->
+    <rect x="10" y="10" width="300" height="210" rx="2" fill="none" stroke="#b89050" stroke-width="0.4" stroke-dasharray="4 3" opacity="0.45"/>
+
+    <!-- ── FLAP (top triangle) — animates closed ── -->
+    <g id="env-flap" style="transform-style: preserve-3d;">
+      <path d="M4 4 L160 110 L316 4 Z" fill="#dbc89a" stroke="#b89050" stroke-width="0.6"/>
+      <!-- Flap inner shading -->
+      <path d="M4 4 L160 110 L316 4 Z" fill="url(#flapGrad)" opacity="0.3"/>
+    </g>
+
+    <!-- Wax seal (on top of flap when open, hidden when closed) -->
+    <g id="wax-seal">
+      <circle cx="160" cy="126" r="20" fill="#8b1a1a"/>
+      <circle cx="160" cy="126" r="18" fill="#a02020"/>
+      <circle cx="160" cy="126" r="15" fill="none" stroke="#c84040" stroke-width="0.5"/>
+      <!-- Heart in wax -->
+      <path d="M160 134 C155 129 149 124 149 119 C149 115 152 112 155 112 C157 112 159 113 160 115 C161 113 163 112 165 112 C168 112 171 115 171 119 C171 124 165 129 160 134Z"
+            fill="#f0b8b8" opacity="0.85"/>
+    </g>
+
+    <!-- Corner flourishes -->
+    <g stroke="#b89050" stroke-width="0.7" fill="none" opacity="0.65">
+      <path d="M16 16 Q20 12 24 16 Q20 20 16 16"/>
+      <path d="M304 16 Q300 12 296 16 Q300 20 304 16"/>
+      <path d="M16 214 Q20 218 24 214 Q20 210 16 214"/>
+      <path d="M304 214 Q300 218 296 214 Q300 210 304 214"/>
+    </g>
+  </svg>
+
+  <!-- Heart — Victorian engraving style -->
+  <div id="final-heart">
+    <svg width="110" height="104" viewBox="0 0 110 104" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <!-- Worn paper texture feel via subtle inner gradient -->
+        <radialGradient id="heartFill" cx="38%" cy="30%" r="65%">
+          <stop offset="0%"   stop-color="#c04040"/>
+          <stop offset="55%"  stop-color="#8b1a1a"/>
+          <stop offset="100%" stop-color="#5a0f0f"/>
+        </radialGradient>
+      </defs>
+
+      <!-- ── Outer ornamental frame — oval cartouche ── -->
+      <ellipse cx="55" cy="52" rx="52" ry="49" fill="none" stroke="#b8962e" stroke-width="0.8" opacity="0.5"/>
+      <ellipse cx="55" cy="52" rx="48" ry="45" fill="none" stroke="#b8962e" stroke-width="0.4" opacity="0.3"/>
+
+      <!-- ── Corner flourishes on cartouche ── -->
+      <g stroke="#b8962e" stroke-width="0.7" fill="none" opacity="0.55">
+        <!-- top -->
+        <path d="M55 4 Q59 7 55 10 Q51 7 55 4"/>
+        <!-- bottom -->
+        <path d="M55 99 Q59 96 55 93 Q51 96 55 99"/>
+        <!-- left -->
+        <path d="M4 52 Q7 48 10 52 Q7 56 4 52"/>
+        <!-- right -->
+        <path d="M106 52 Q103 48 100 52 Q103 56 106 52"/>
+      </g>
+
+      <!-- ── HEART BODY — slightly pointed base, period-style ── -->
+      <!-- The Victorian heart has a more angular, symmetrical, heraldic shape -->
+      <path d="M55 88
+               C47 80 22 66 16 50
+               C10 36 14 22 24 18
+               C30 15 37 17 42 22
+               C46 26 50 32 55 38
+               C60 32 64 26 68 22
+               C73 17 80 15 86 18
+               C96 22 100 36 94 50
+               C88 66 63 80 55 88 Z"
+            fill="url(#heartFill)"/>
+
+      <!-- ── Engraving lines — hatching that gives depth, period print style ── -->
+      <!-- Left lobe hatching — diagonal lines -->
+      <g stroke="#6a1010" stroke-width="0.55" opacity="0.45">
+        <line x1="22" y1="26" x2="36" y2="40"/>
+        <line x1="19" y1="32" x2="38" y2="51"/>
+        <line x1="18" y1="40" x2="38" y2="60"/>
+        <line x1="20" y1="48" x2="37" y2="65"/>
+        <line x1="24" y1="56" x2="38" y2="70"/>
+        <line x1="29" y1="63" x2="41" y2="75"/>
+      </g>
+      <!-- Right lobe hatching — mirrored -->
+      <g stroke="#6a1010" stroke-width="0.55" opacity="0.45">
+        <line x1="88" y1="26" x2="74" y2="40"/>
+        <line x1="91" y1="32" x2="72" y2="51"/>
+        <line x1="92" y1="40" x2="72" y2="60"/>
+        <line x1="90" y1="48" x2="73" y2="65"/>
+        <line x1="86" y1="56" x2="72" y2="70"/>
+        <line x1="81" y1="63" x2="69" y2="75"/>
+      </g>
+      <!-- Cross-hatch second pass — lighter -->
+      <g stroke="#4a0808" stroke-width="0.35" opacity="0.3">
+        <line x1="20" y1="36" x2="30" y2="26"/>
+        <line x1="20" y1="44" x2="34" y2="30"/>
+        <line x1="20" y1="52" x2="37" y2="35"/>
+        <line x1="22" y1="60" x2="40" y2="42"/>
+        <line x1="90" y1="36" x2="80" y2="26"/>
+        <line x1="90" y1="44" x2="76" y2="30"/>
+        <line x1="90" y1="52" x2="73" y2="35"/>
+        <line x1="88" y1="60" x2="70" y2="42"/>
+      </g>
+
+      <!-- ── Outline — thick period-engraving border ── -->
+      <path d="M55 88
+               C47 80 22 66 16 50
+               C10 36 14 22 24 18
+               C30 15 37 17 42 22
+               C46 26 50 32 55 38
+               C60 32 64 26 68 22
+               C73 17 80 15 86 18
+               C96 22 100 36 94 50
+               C88 66 63 80 55 88 Z"
+            fill="none" stroke="#8b1a1a" stroke-width="1.8"/>
+      <!-- Finer inner contour -->
+      <path d="M55 82
+               C48 75 26 63 21 48
+               C16 35 19 24 27 20
+               C32 18 38 20 43 25
+               C47 29 51 35 55 41
+               C59 35 63 29 67 25
+               C72 20 78 18 83 20
+               C91 24 94 35 89 48
+               C84 63 62 75 55 82 Z"
+            fill="none" stroke="#c04040" stroke-width="0.5" opacity="0.4"/>
+
+      <!-- ── Highlight — upper-left light catch, engraving style ── -->
+      <path d="M34 24 C30 28 28 34 30 40" stroke="#e08080" stroke-width="1.4" fill="none" opacity="0.35" stroke-linecap="round"/>
+      <path d="M38 21 C35 24 33 28 34 33" stroke="#e08080" stroke-width="0.8" fill="none" opacity="0.25" stroke-linecap="round"/>
+
+      <!-- ── Gold leaf detail — tiny dots at top cleft ── -->
+      <circle cx="55" cy="39" r="1.5" fill="#d4af5a" opacity="0.5"/>
+      <circle cx="52" cy="37" r="0.8" fill="#c8a040" opacity="0.35"/>
+      <circle cx="58" cy="37" r="0.8" fill="#c8a040" opacity="0.35"/>
+
+      <!-- ── Small ornamental flourish below heart ── -->
+      <g stroke="#b8962e" stroke-width="0.6" fill="none" opacity="0.5">
+        <path d="M45 93 Q55 98 65 93"/>
+        <path d="M49 96 Q55 100 61 96"/>
+        <circle cx="55" cy="100" r="1.2" fill="#b8962e" opacity="0.4"/>
+      </g>
+    </svg>
+  </div>
+
+  <!-- Tagline -->
+  <p id="final-tagline">de lo demás, me ocupo yo.</p>
+
+</div>
+
+</body>
+</html>
